@@ -7,7 +7,7 @@ const rimraf = require("rimraf");
 
 const distPath = path.resolve(__dirname, "../dist");
 
-if(existsSync(distPath))
+if (existsSync(distPath))
 	rimraf.sync(path.resolve(__dirname, "../dist"));
 
 mkdirSync(distPath);
@@ -15,7 +15,6 @@ mkdirSync(distPath);
 const appConfig = require("./webpack.config");
 
 let didAppCompile = false;
-let didMainCompile = false;
 
 let proc = null;
 
@@ -33,47 +32,42 @@ const restart = () =>
 		setTimeout(() => 
 		{
 			proc = spawn("electron", [".", "--dev"], { cwd: path.resolve(__dirname, ".."), stdio: "inherit" });
+			proc.on("exit", (code) => console.log(`app exited with code ${code}!`));
 		}, 500);
 	});
 }
 
 webpack(appConfig).watch({}, (a, stats) => 
 {
-	if (didMainCompile && !didAppCompile)
-		restart();
-	didAppCompile = true;
+	if (!didAppCompile)
+	{
+		didAppCompile = true;
+
+		spawn("tsc", "--watch -p main.tsconfig.json".split(" "), {
+			stdio: "inherit"
+		});
+
+		let timeout = null;
+
+		watch(path.resolve(__dirname, "../dist"), {}, (e, name) => 
+		{
+			if (timeout)
+				clearTimeout(timeout);
+			timeout = setTimeout(() => 
+			{
+				restart();
+			}, 150);
+		});
+	}
 	console.log(`\n[App]:`);
 	console.log(stats.toString("minimal"));
 	console.log("");
 });
 
-const mainChanged = () =>
-{
-	didMainCompile = true;
-	if(didAppCompile)
-		restart();
-};
-
-spawn("tsc", "--watch -p main.tsconfig.json".split(" "), {
-	stdio: "inherit" 
-});
-
-let timeout = null;
-
-watch(path.resolve(__dirname, "../dist"), {}, (e, name) => 
-{
-	if(timeout)
-		clearTimeout(timeout);
-	timeout = setTimeout(() => 
-	{
-		mainChanged();
-	}, 150);
-});
-
 const assetsDir = path.resolve(__dirname, "../src/assets");
 const distAssetsDir = path.resolve(__dirname, "../dist/assets");
 
-if(!existsSync(distAssetsDir))
+if (!existsSync(distAssetsDir))
 	mkdirSync(distAssetsDir);
 
 readdirSync(assetsDir).forEach(f => 

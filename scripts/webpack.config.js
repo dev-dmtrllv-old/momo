@@ -18,7 +18,7 @@ module.exports = {
 		publicPath: "./"
 	},
 	resolve: {
-		extensions: [".ts", ".tsx", ".js", ".jsx", ".json"],
+		extensions: [".ts", ".tsx", ".js", ".jsx", ".json"]
 	},
 	target: "electron-renderer",
 	devtool: "source-map",

@@ -1,6 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
+import { AppInfo } from "../main/AppInfo";
+
 const exec = (callback: Function) => callback();
 
 const getAppInfo = (): AppInfo =>
@@ -8,17 +10,15 @@ const getAppInfo = (): AppInfo =>
 	const search = window.location.search
 	if (search)
 	{
-		const data = JSON.parse(decodeURI(window.location.search).substring(1, window.location.search.length)).data || {};
-
-		if (!data.target)
-			data.target = "app";
+		const data: AppInfo = JSON.parse(decodeURI(window.location.search).substring(1, window.location.search.length)).data || {};
+		if(!data.path)
+			data.path = "App";
 		return data;
 	}
 	else
 	{
-		return { target: "app" };
+		return { path: "App" };
 	}
-
 }
 
 exec(async () => 
@@ -30,26 +30,15 @@ exec(async () =>
 
 	const appInfo = getAppInfo();
 
-	let app: JSX.Element;
-
-	switch (appInfo.target)
+	try
 	{
-		case "app":
-			const App = (await import("./App")).default;
-			app = <App />;
-			break;
-		case "prompt":
-			const Prompt = (await import("./Prompt")).default;
-			app = <Prompt buttons={appInfo.buttons} question={appInfo.question} />;
-			break;
+		const appModule = await import(`./apps/${appInfo.path}`);
+		const props = appInfo.data || {};
+		ReactDOM.render(<appModule.default {...props} />, root);
 	}
-
-	ReactDOM.render(app, root);
-
+	catch(e)
+	{
+		console.error(e);
+	}
 });
-
-type AppInfo = {
-	target: "app" | "prompt";
-	[key: string]: any;
-}
 

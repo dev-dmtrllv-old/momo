@@ -1,4 +1,3 @@
-import { isDev } from "./env";
 import { app } from "electron";
 import { Window } from "./Window";
 import { MainWindow } from "./MainWindow";
@@ -32,7 +31,7 @@ app.whenReady().then(() =>
 		icon: iconPath
 	});
 
-	mainWindow.load({ target: "app" });
+	mainWindow.load("App");
 });
 
 app.on("window-all-closed", () => app.quit());

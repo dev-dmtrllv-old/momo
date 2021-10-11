@@ -1,8 +1,6 @@
 import React from "react";
 import { ipcRenderer } from "electron"
 
-import "./app.scss";
-
 const Prompt: React.FC<PromptProps> = ({ buttons, question }) =>
 {
 	return (
@@ -12,7 +10,6 @@ const Prompt: React.FC<PromptProps> = ({ buttons, question }) =>
 		</div>
 	);
 }
-
 
 type PromptButton = {
 	text: string;

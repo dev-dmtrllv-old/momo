@@ -1,4 +1,5 @@
 import { BrowserWindow, BrowserWindowConstructorOptions, Event } from "electron";
+import { AppInfo } from "./AppInfo";
 import { isDev } from "./env";
 
 export abstract class Window
@@ -53,7 +54,7 @@ export abstract class Window
 		this.isLoaded_ = e.defaultPrevented;
 	}
 
-	public readonly load = (data?: Object) =>
+	public readonly load = (appName: string, data?: any) =>
 	{
 		if (!this.isLoaded_)
 		{
@@ -67,7 +68,7 @@ export abstract class Window
 				}, 0);
 			}).then(() => 
 			{
-				this.window.loadFile(this.loadFileName, { search: JSON.stringify({ data }) }).then(() => this.onLoad());
+				this.window.loadFile(this.loadFileName, { search: JSON.stringify({ data: { path: appName, data } }) }).then(() => this.onLoad());
 			});
 		}
 		return new Promise<void>((res) => res());

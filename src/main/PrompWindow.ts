@@ -7,7 +7,7 @@ export class PromptWindow extends Window
 	{
 		return new Promise<any>(async (res, rej) => 
 		{
-			await this.load({ target: "prompt", ...options });
+			await this.load("Prompt", options);
 			
 			ipcMain.once("response", (event, arg) => {
 				this.window.close();

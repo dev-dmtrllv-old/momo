@@ -1,10 +1,10 @@
 import React from "react";
-import { Header } from "./components/Header";
-import { Home } from "./sections/Home";
-import { FlexBox, FlexItem, View } from "./views";
-import { ServerSideList } from "./components/ServerSideList";
+import { Header } from "../components/Header";
+import { ServerSideList } from "../components/ServerSideList";
+import { Home } from "../sections";
+import { FlexBox, FlexItem, View } from "../views";
 
-import "./app.scss";
+import "./styles/app.scss";
 
 const AppContext = React.createContext<AppContextType>({ section: Home, routeToSection: (s: ReactEl) => { } });
 
