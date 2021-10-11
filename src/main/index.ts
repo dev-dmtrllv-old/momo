@@ -16,6 +16,7 @@ app.whenReady().then(() =>
 			contextIsolation: false
 		},
 		show: false,
+		icon: "src/assets/logo.png"
 	});
 
 	promptWindow = Window.init(PromptWindow, {
@@ -24,6 +25,7 @@ app.whenReady().then(() =>
 			contextIsolation: false
 		},
 		show: false,
+		icon: "src/assets/logo.png"
 	});
 
 	mainWindow.load({ target: "app" });
