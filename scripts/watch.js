@@ -1,10 +1,18 @@
 const { webpack } = require("webpack");
 const path = require("path");
+const { watch, copyFileSync, readdirSync, existsSync, mkdirSync, fstat } = require("fs");
 const { spawn } = require("child_process");
 const findProccess = require("find-process");
+const rimraf = require("rimraf");
 
-const appConfig = require("./webpack.app");
-const mainConfig = require("./webpack.main");
+const distPath = path.resolve(__dirname, "../dist");
+
+if(existsSync(distPath))
+	rimraf.sync(path.resolve(__dirname, "../dist"));
+
+mkdirSync(distPath);
+
+const appConfig = require("./webpack.config");
 
 let didAppCompile = false;
 let didMainCompile = false;
@@ -24,12 +32,10 @@ const restart = () =>
 		});
 		setTimeout(() => 
 		{
-			proc = spawn("electron", ["."], { cwd: path.resolve(__dirname, ".."), stdio: "inherit" });
+			proc = spawn("electron", [".", "--dev"], { cwd: path.resolve(__dirname, ".."), stdio: "inherit" });
 		}, 500);
 	});
 }
-
-const isRunning = () => didAppCompile && didMainCompile;
 
 webpack(appConfig).watch({}, (a, stats) => 
 {
@@ -41,15 +47,41 @@ webpack(appConfig).watch({}, (a, stats) =>
 	console.log("");
 });
 
-webpack(mainConfig).watch({}, (a, stats) => 
+const mainChanged = () =>
 {
-	if (didAppCompile && !didMainCompile)
-		restart();
-	else if (isRunning())
-		restart();
-
 	didMainCompile = true;
-	console.log(`\n[Main]:`);
-	console.log(stats.toString("minimal"));
-	console.log("");
+	if(didAppCompile)
+		restart();
+};
+
+spawn("tsc", "--watch -p main.tsconfig.json".split(" "), {
+	stdio: "inherit" 
+});
+
+let timeout = null;
+
+watch(path.resolve(__dirname, "../dist"), {}, (e, name) => 
+{
+	if(timeout)
+		clearTimeout(timeout);
+	timeout = setTimeout(() => 
+	{
+		mainChanged();
+	}, 150);
+});
+
+const assetsDir = path.resolve(__dirname, "../src/assets");
+const distAssetsDir = path.resolve(__dirname, "../dist/assets");
+
+if(!existsSync(distAssetsDir))
+	mkdirSync(distAssetsDir);
+
+readdirSync(assetsDir).forEach(f => 
+{
+	copyFileSync(path.resolve(assetsDir, f), path.resolve(__dirname, "../dist/assets", f));
+})
+
+watch(assetsDir, {}, (e, name) => 
+{
+	copyFileSync(path.resolve(assetsDir, name), path.resolve(__dirname, "../dist/assets", name));
 });

@@ -1,4 +1,5 @@
 import { BrowserWindow, BrowserWindowConstructorOptions, Event } from "electron";
+import { isDev } from "./env";
 
 export abstract class Window
 {
@@ -34,7 +35,7 @@ export abstract class Window
 
 	protected get loadFileName(): string
 	{
-		return "./dist/app/index.html";
+		return isDev() ? "./dist/app/index.html" : "./app/index.html";
 	}
 
 	public constructor(options: BrowserWindowConstructorOptions)

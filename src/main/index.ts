@@ -1,22 +1,26 @@
+import { isDev } from "./env";
 import { app } from "electron";
 import { Window } from "./Window";
 import { MainWindow } from "./MainWindow";
 import { PromptWindow } from "./PrompWindow";
+import { Assets } from "./assets";
 
 (process.env as any)["ELECTRON_DISABLE_SECURITY_WARNINGS"] = true;
 
-let mainWindow: Window;
+let mainWindow: MainWindow;
 let promptWindow: PromptWindow;
 
 app.whenReady().then(() => 
 {
+	const iconPath = Assets.resolvePath("logo.png");
+
 	mainWindow = Window.init(MainWindow, {
 		webPreferences: {
 			nodeIntegration: true,
 			contextIsolation: false
 		},
 		show: false,
-		icon: "src/assets/logo.png"
+		icon: iconPath
 	});
 
 	promptWindow = Window.init(PromptWindow, {
@@ -25,7 +29,7 @@ app.whenReady().then(() =>
 			contextIsolation: false
 		},
 		show: false,
-		icon: "src/assets/logo.png"
+		icon: iconPath
 	});
 
 	mainWindow.load({ target: "app" });

@@ -2,6 +2,7 @@ import { Event, Menu, Tray } from "electron";
 import { Window } from "./Window";
 import fs from "fs";
 import { PromptWindow } from "./PrompWindow";
+import { Assets } from "./assets";
 
 export class MainWindow extends Window
 {
@@ -65,7 +66,7 @@ export class MainWindow extends Window
 
 	protected init = () =>
 	{
-		this.tray_ = new Tray("src/assets/logo.png");
+		this.tray_ = new Tray(Assets.resolvePath("logo.png"));
 		this.tray.setContextMenu(Menu.buildFromTemplate(this.trayTemplate));
 
 		this.window.setMenu(null);
