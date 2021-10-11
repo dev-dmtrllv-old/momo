@@ -1,19 +1,32 @@
 import { app } from "electron";
-import { AppWindow } from "./AppWindow";
+import { Window } from "./Window";
 import { MainWindow } from "./MainWindow";
+import { PromptWindow } from "./PrompWindow";
 
 (process.env as any)["ELECTRON_DISABLE_SECURITY_WARNINGS"] = true;
 
-
-let mainWindow: AppWindow;
+let mainWindow: Window;
+let promptWindow: PromptWindow;
 
 app.whenReady().then(() => 
 {
-	mainWindow = new MainWindow({
+	mainWindow = Window.init(MainWindow, {
 		webPreferences: {
 			nodeIntegration: true,
 			contextIsolation: false
 		},
 		show: false,
 	});
+
+	promptWindow = Window.init(PromptWindow, {
+		webPreferences: {
+			nodeIntegration: true,
+			contextIsolation: false
+		},
+		show: false,
+	});
+
+	mainWindow.load({ target: "app" });
 });
+
+app.on("window-all-closed", () => app.quit());

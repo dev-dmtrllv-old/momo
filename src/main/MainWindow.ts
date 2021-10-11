@@ -1,14 +1,10 @@
-import { Event, Menu, MenuItem, Tray } from "electron";
-import { AppWindow } from "./AppWindow";
+import { Event, Menu, Tray } from "electron";
+import { Window } from "./Window";
 import fs from "fs";
+import { PromptWindow } from "./PrompWindow";
 
-export class MainWindow extends AppWindow
+export class MainWindow extends Window
 {
-	protected get loadFileName(): string
-	{
-		return "./dist/app/index.html";
-	}
-
 	private hide = () =>
 	{
 		const i = this.trayTemplate[0];
@@ -28,12 +24,13 @@ export class MainWindow extends AppWindow
 	}
 
 	private trayTemplate: (Electron.MenuItemConstructorOptions | Electron.MenuItem)[] = [
-		{ label: "Hide", click: () => this.hide() },
+		{ label: "Hide", type: "normal", click: () => this.hide() },
 		{ type: "separator" },
-		{ label: "Quit", type: "normal", click: () => { } }
+		{ label: "Quit", type: "normal", click: () => { this.close(); } }
 	];
 
 	private tray_: Tray | null = null;
+	private canQuit_: boolean = false;
 
 	private get tray(): Tray
 	{
@@ -42,10 +39,32 @@ export class MainWindow extends AppWindow
 		return this.tray_;
 	}
 
+	private async close()
+	{
+		const promptWindow = Window.get(PromptWindow);
+		const response = await promptWindow.prompt({
+			question: "Are you sure you want to quit?",
+			buttons: [
+				{
+					text: "Yes",
+					value: true
+				},
+				{
+					text: "No",
+					value: false
+				}
+			]
+		});
+		
+		if (response)
+		{
+			this.canQuit_ = true;
+			this.window.close();
+		}
+	}
+
 	protected init = () =>
 	{
-		console.log("on init");
-
 		this.tray_ = new Tray("src/assets/logo.png");
 		this.tray.setContextMenu(Menu.buildFromTemplate(this.trayTemplate));
 
@@ -75,7 +94,6 @@ export class MainWindow extends AppWindow
 
 	protected onReady = () =>
 	{
-		console.log("on ready");
 		this.window.maximize();
 		this.window.webContents.openDevTools();
 		this.window.show();
@@ -83,19 +101,20 @@ export class MainWindow extends AppWindow
 
 	protected onLoad = () =>
 	{
-		console.log("on load");
+
 	}
 
 	protected onClose = (e: Event) =>
 	{
-		console.log("on close");
-		e.preventDefault();
-		this.hide();
+		if (!this.canQuit_)
+		{
+			e.preventDefault();
+			this.hide();
+		}
 	}
 
 	protected onClosed = () =>
 	{
-		console.log("on closed");
 		this.tray.destroy();
 	}
 }
