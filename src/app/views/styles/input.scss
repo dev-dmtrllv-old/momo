@@ -1,0 +1,36 @@
+@import "app/theme.scss";
+
+.input-wrapper {
+	margin: 5px;
+	.input {
+		background-color: transparent;
+		border: 0px;
+		border-bottom: 1px solid $tertiary-bg;
+		font-size: 14px;
+		padding: 7px 15px;
+		color: $primary-fg;
+		outline: none;
+
+		&.focus {
+			border-color: $active-box-shadow;
+		}
+	}
+
+	.placeholder {
+		left: 15px;
+		top: 7px;
+		background-color: transparent;
+		transition: 150ms;
+	}
+
+	&.focus .placeholder, &:not(.empty) .placeholder {
+		left: 4px;
+		font-size: 10px;
+		top: -5px;
+		&::after {
+			content: ":";
+			position: absolute;
+			right: 0;
+		}
+	}
+}
