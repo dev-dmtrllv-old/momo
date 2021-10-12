@@ -2,6 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom";
 
 import { AppInfo } from "../main/AppInfo";
+import { IPC } from "../main/Ipc";
+import { Store } from "./stores/Store";
 
 const exec = (callback: Function) => callback();
 
@@ -23,6 +25,8 @@ const getAppInfo = (): AppInfo =>
 
 exec(async () => 
 {
+	(window as any).isServerStarted = await IPC.call("is-server-running");
+
 	const root = document.createElement("div");
 	root.id = "root";
 
@@ -33,6 +37,7 @@ exec(async () =>
 	try
 	{
 		const appModule = await import(`./apps/${appInfo.path}`);
+		await Store.initializeStores();
 		const props = appInfo.data || {};
 		ReactDOM.render(<appModule.default {...props} />, root);
 	}

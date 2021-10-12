@@ -11,7 +11,11 @@
 		"jsx": "react",
 		"declaration": false,
 		"outDir": "dist",
+		"baseUrl": "src",
 		"rootDir": "src",
+		"paths": {
+			
+		},
 		"removeComments": true,
 		"noImplicitAny": true,
 		"strictNullChecks": true,
@@ -26,5 +30,15 @@
 		"experimentalDecorators": true,
 		"forceConsistentCasingInFileNames": true,
 		"resolveJsonModule": true
-	}
+	},
+	"exclude": [
+		"./src/main/server/**",
+		"./src/main/*.ts"
+	],
+	"include": [
+		"./src/**/*",
+		"./src/main/Ipc.ts",
+		"./src/main/AppInfo.ts",
+		"./src/main/env.ts"
+	]
 }

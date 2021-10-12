@@ -1,5 +1,6 @@
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HtmlPlugin = require("html-webpack-plugin");
+const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
 
 const path = require("path");
 
@@ -18,7 +19,10 @@ module.exports = {
 		publicPath: "./"
 	},
 	resolve: {
-		extensions: [".ts", ".tsx", ".js", ".jsx", ".json"]
+		extensions: [".ts", ".tsx", ".js", ".jsx", ".json"],
+		plugins: [
+			new TsconfigPathsPlugin({ configFile: resolve("tsconfig.json") })
+		]
 	},
 	target: "electron-renderer",
 	devtool: "source-map",

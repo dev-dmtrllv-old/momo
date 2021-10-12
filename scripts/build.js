@@ -6,21 +6,26 @@ const unzip = require("unzip");
 const rimraf = require("rimraf");
 
 const appConfig = require("./webpack.config");
+const mainConfig = require("./webpack.main");
 
 const pkg = require("../package.json");
-const { spawn } = require("child_process");
 
 const buildPath = path.resolve(__dirname, "../build");
 const appPath = path.resolve(buildPath, "resources", "app");
 const appRendererPath = path.resolve(buildPath, "resources", "app", "app");
 const defaultAppAsarPath = path.resolve(buildPath, "resources", "default_app.asar");
 
+mainConfig.devtool = appConfig.devtool = undefined;
+mainConfig.mode = appConfig.mode = "production";
+appConfig.output.path = appRendererPath;
+mainConfig.output.path = appPath;
+
 const finish = () =>
 {
 	const pkgData = {
 		name: pkg.name,
 		version: pkg.version,
-		main: "index.js",
+		main: "main.bundle.js",
 		dependencies: pkg.dependencies
 	};
 
@@ -36,44 +41,37 @@ const finish = () =>
 	fs.readdirSync(assetsDir).forEach(f => 
 	{
 		fs.copyFileSync(path.resolve(assetsDir, f), path.resolve(distAssetsDir, f));
-	})
+	});
 }
+
+const compileApp = () => new Promise((res) => 
+{
+	webpack(appConfig).run((_, stats) => 
+	{
+		console.log(`\n[App]:`);
+		console.log(stats.toString("minimal"));
+		console.log("");
+		res();
+	});
+});
+
+const compileMain = () => new Promise((res) => 
+{
+	webpack(mainConfig).run((a, stats) => 
+	{
+		console.log(`\n[Main]:`);
+		console.log(stats.toString("minimal"));
+		console.log("");
+		res();
+	});
+});
 
 const build = () =>
 {
 	if (fs.existsSync(appPath))
 		rimraf.sync(appPath);
 
-	let appDone = false;
-	let mainDone = false;
-
-	appConfig.devtool = undefined;
-	appConfig.mode = "production";
-	appConfig.output.path = appRendererPath;
-
-	const tsc = spawn("tsc", `-p main.tsconfig.json --outDir ${appPath} --sourceMap false`.split(" "), {
-		stdio: "inherit"
-	});
-
-	webpack(appConfig).run((_, stats) => 
-	{
-		console.log(`\n[App]:`);
-		console.log(stats.toString("minimal"));
-		console.log("");
-
-		if (mainDone)
-			finish();
-		else
-			appDone = true;
-	});
-
-	tsc.on("exit", () => 
-	{
-		if (appDone)
-			finish();
-		else
-			mainDone = true;
-	});
+	Promise.all([compileApp(), compileMain()]).then(() => finish());
 }
 
 if (fs.existsSync(buildPath))

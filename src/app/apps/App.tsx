@@ -6,14 +6,14 @@ import { FlexBox, FlexItem, View } from "../views";
 
 import "./styles/app.scss";
 
-const AppContext = React.createContext<AppContextType>({ section: Home, routeToSection: (s: ReactEl) => { } });
+const AppContext = React.createContext<AppContextType>({ section: Home, routeToSection: (s: React.FC<unknown>) => { } });
 
 const App = () =>
 {
 	const [state, setState] = React.useState({ section: Home });
 
 	return (
-		<AppContext.Provider value={{ section: state.section, routeToSection: (s: ReactEl) => setState({ section: s }) }}>
+		<AppContext.Provider value={{ section: state.section, routeToSection: (s: React.FC<unknown>) => setState({ section: s }) }}>
 			<FlexBox id="app" fill position="absolute" dir="vertical">
 				<FlexItem base={64}>
 					<View position="absolute" fill>
@@ -39,11 +39,9 @@ const App = () =>
 	);
 }
 
-type ReactEl = () => JSX.Element;
-
 type AppContextType = {
-	section: ReactEl,
-	routeToSection: (section: ReactEl) => void
+	section: React.FC<unknown>,
+	routeToSection: (section: React.FC<unknown>) => void
 };
 
 export default App;
