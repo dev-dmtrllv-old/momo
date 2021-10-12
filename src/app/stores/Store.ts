@@ -46,13 +46,12 @@ export abstract class Store
 			await s.init();
 			try
 			{
-				if (!(s instanceof PersistenStore))
-					makeObservable(s);
+				makeObservable(s);
 			}
 			catch (e)
 			{
-				console.log(s);
-				console.error(e);
+				if (!(s instanceof PersistenStore))
+					console.error(e);
 			}
 		}
 	}
