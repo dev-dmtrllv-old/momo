@@ -6,9 +6,4 @@ import { PersistenStore } from "./PersistenStore";
 export class SettingsStore extends PersistenStore<SettingsProps>
 {
 	protected get persistentName(): string { return "settings"; }
-	
-	onLoad(props: SettingsProps)
-	{
-		console.log(props);
-	}
 }

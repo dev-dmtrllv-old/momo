@@ -1,16 +1,12 @@
-import { IPC } from "shared/Ipc";
 import { MCVersions } from "../../main/Versions";
+import { PersistenStore } from "./PersistenStore";
 import { Store } from "./Store";
 
 @Store.static
-export class CreateServerStore extends Store
+export class CreateServerStore extends PersistenStore<MCVersions>
 {
-	private versionsInfo_!: MCVersions;
-
-	public async init()
+	protected get persistentName(): string
 	{
-		this.versionsInfo_ = JSON.parse(await IPC.call("get-persistent", "versions"));
+		return "versions";
 	}
-
-	public get versions() { return this.versionsInfo_.versions; }
 }

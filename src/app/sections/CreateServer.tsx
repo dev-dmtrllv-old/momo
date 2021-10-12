@@ -10,9 +10,8 @@ export const CreateServer = Store.withStore(CreateServerStore, ({ store }) =>
 	return (
 		<Container>
 			<View id="create-server">
-				Create server
 				<select name="version">
-					{store.versions.map((v, i) => <option key={i}>{v.id}</option>)}
+					{store.props.versions.map((v, i) => <option key={i}>{v.id}</option>)}
 				</select>
 			</View>
 		</Container>

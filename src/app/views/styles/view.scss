@@ -1,5 +1,19 @@
+@import "app/theme.scss";
+
 .view {
 	box-sizing: border-box;
+
+	&.primary {
+		@include primary;
+	}
+
+	&.secundary {
+		@include secundary;
+	}
+
+	&.tertiary {
+		@include tertiary;
+	}
 
 	&.relative {
 		position: relative;

@@ -9,6 +9,7 @@ import { Persistent } from "./Persistent";
 import path from "path";
 import { Settings } from "./Settings";
 import { Versions } from "./Versions";
+import { Servers } from "./Servers";
 
 (process.env as any)["ELECTRON_DISABLE_SECURITY_WARNINGS"] = true;
 
@@ -21,6 +22,7 @@ app.whenReady().then(() =>
 	
 	Persistent.register("settings", Settings);
 	Persistent.register("versions", Versions);
+	Persistent.register("servers", Servers);
 
 	Persistent.init(app.getPath("appData"));
 

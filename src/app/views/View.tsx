@@ -3,13 +3,14 @@ import { utils } from "../../utils";
 
 import "./styles/view.scss";
 
-export const View: React.FC<WithReactProps<ViewProps>> = ({ type = "div", children, className, position = "relative", center, fill, ...props }) => 
+export const View: React.FC<WithReactProps<ViewProps>> = ({ type = "div", children, className, position = "relative", center, fill, theme = "primary", ...props }) => 
 {
 	const cn = utils.react.getClassFromProps("view", {
 		[position || "relative"]: true,
 		center,
 		fill,
-		className
+		className,
+		[theme]: true
 	});
 
 	return React.createElement(type, { ...props, className: cn }, children);
@@ -24,6 +25,7 @@ export type ViewProps = {
 	fill?: boolean | ViewDirection;
 	center?: boolean | ViewDirection;
 	position?: ViewPosition;
+	theme?: "primary" | "secundary" | "tertiary";
 }
 
 export type ViewPosition = "relative" | "static" | "absolute" | "fixed";

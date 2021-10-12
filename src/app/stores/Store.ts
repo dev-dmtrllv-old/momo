@@ -40,15 +40,18 @@ export abstract class Store
 
 	public static async initializeStores()
 	{
+		const PersistenStore = require("./PersistenStore").PersistenStore;
 		for (const s of this.stores)
 		{
 			await s.init();
 			try
 			{
-				makeObservable(s);
+				if (!(s instanceof PersistenStore))
+					makeObservable(s);
 			}
-			catch(e)
+			catch (e)
 			{
+				console.log(s);
 				console.error(e);
 			}
 		}
