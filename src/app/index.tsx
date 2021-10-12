@@ -1,8 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-import { AppInfo } from "../main/AppInfo";
-import { IPC } from "../main/Ipc";
+import { AppInfo } from "../shared/AppInfo";
+import { IPC } from "../shared/Ipc";
 import { Store } from "./stores/Store";
 
 const exec = (callback: Function) => callback();
@@ -13,7 +13,7 @@ const getAppInfo = (): AppInfo =>
 	if (search)
 	{
 		const data: AppInfo = JSON.parse(decodeURI(window.location.search).substring(1, window.location.search.length)).data || {};
-		if(!data.path)
+		if (!data.path)
 			data.path = "App";
 		return data;
 	}
@@ -41,7 +41,7 @@ exec(async () =>
 		const props = appInfo.data || {};
 		ReactDOM.render(<appModule.default {...props} />, root);
 	}
-	catch(e)
+	catch (e)
 	{
 		console.error(e);
 	}

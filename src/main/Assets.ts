@@ -1,5 +1,5 @@
 import path from "path";
-import { isDev } from "./env";
+import { isDev } from "../shared/env";
 
 export class Assets
 {

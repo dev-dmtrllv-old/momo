@@ -4,10 +4,11 @@ import { MainWindow } from "./MainWindow";
 import { PromptWindow } from "./PrompWindow";
 import { Assets } from "./Assets";
 import { Server } from "./server/Server";
-import { IPC } from "./Ipc";
+import { IPC } from "../shared/Ipc";
 import { Persistent } from "./Persistent";
 import path from "path";
 import { Settings } from "./Settings";
+import { Versions } from "./Versions";
 
 (process.env as any)["ELECTRON_DISABLE_SECURITY_WARNINGS"] = true;
 
@@ -19,6 +20,7 @@ app.whenReady().then(() =>
 	app.setPath("appData", path.resolve(app.getPath("appData"), "momo"));
 	
 	Persistent.register("settings", Settings);
+	Persistent.register("versions", Versions);
 
 	Persistent.init(app.getPath("appData"));
 

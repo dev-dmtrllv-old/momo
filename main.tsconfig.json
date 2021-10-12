@@ -6,7 +6,7 @@
 		"sourceMap": true,
 		"outDir": "dist",
 		"baseUrl": "src",
-		"rootDir": "src/main",
+		"rootDir": "src",
 		"paths": {
 			"*": [
 				"node_modules/*"
@@ -20,5 +20,8 @@
 	},
 	"include": [
 		"src/main/**/*"
+	],
+	"exclude": [
+		"src/app"
 	]
 }

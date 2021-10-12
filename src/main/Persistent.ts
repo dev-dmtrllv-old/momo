@@ -1,5 +1,6 @@
-import { isMain } from "./env";
-import { IPC } from "./Ipc";
+import { utils } from "../utils";
+import { isMain } from "../shared/env";
+import { IPC } from "../shared/Ipc";
 
 export abstract class Persistent<Props>
 {
@@ -30,7 +31,7 @@ export abstract class Persistent<Props>
 		return this.types_[name] = type;
 	}
 
-	public static init(appDataPath: string)
+	public static async init(appDataPath: string)
 	{
 		if (isMain)
 		{
@@ -47,7 +48,7 @@ export abstract class Persistent<Props>
 				
 				let props: any;
 				
-				const defaultProps = o.defaultProps();
+				const defaultProps = await o.defaultProps();
 
 				if (!fs.existsSync(p))
 				{
@@ -55,9 +56,11 @@ export abstract class Persistent<Props>
 					fs.writeFileSync(p, JSON.stringify(props), "utf-8");
 				}
 
+				console.log(p);
+
 				props = JSON.parse(fs.readFileSync(p));
 
-				if(!this.matchPropsKeys(props, defaultProps))
+				if(!utils.equals(props, defaultProps))
 				{
 					props = { ...defaultProps, ...props };
 					fs.writeFileSync(p, JSON.stringify(props), "utf-8");
@@ -98,7 +101,7 @@ export abstract class Persistent<Props>
 		this.path = path;
 	}
 
-	protected abstract defaultProps(): Props;
+	protected abstract defaultProps(): Props | Promise<Props>;
 
 	public readonly set = <K extends keyof Props>(key: K, val: Props[K]) =>
 	{

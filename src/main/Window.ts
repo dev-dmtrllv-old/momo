@@ -1,5 +1,5 @@
 import { BrowserWindow, BrowserWindowConstructorOptions, Event } from "electron";
-import { isDev } from "./env";
+import { isDev } from "../shared/env";
 
 export abstract class Window
 {

@@ -1,4 +1,4 @@
-import { IPC } from "main/Ipc";
+import { IPC } from "shared/Ipc";
 import { action, computed, makeObservable, observable } from "mobx";
 import { Store } from "./Store";
 

@@ -43,7 +43,14 @@ export abstract class Store
 		for (const s of this.stores)
 		{
 			await s.init();
-			makeObservable(s);
+			try
+			{
+				makeObservable(s);
+			}
+			catch(e)
+			{
+				console.error(e);
+			}
 		}
 	}
 

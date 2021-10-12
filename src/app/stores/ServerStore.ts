@@ -1,6 +1,6 @@
 import { Store } from "./Store";
 import { action, computed, observable } from "mobx";
-import { IPC } from "main/Ipc";
+import { IPC } from "shared/Ipc";
 
 @Store.static
 export class ServerStore extends Store
