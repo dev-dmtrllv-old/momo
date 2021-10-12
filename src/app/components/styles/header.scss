@@ -1,4 +1,28 @@
-#header
-{
-	
+@import "app/theme.scss";
+
+#header {
+	padding: 5px 15px;
+	border-bottom: 1px solid $border-color;
+
+	.wrapper {
+		bottom: 5px;
+		h1 {
+			display: inline-block;
+		}
+		.links {
+			bottom: 5px;
+			a {
+				padding: 5px;
+				cursor: pointer;
+				transition: color 350ms;
+				&:hover {
+					color: rgba(255, 255, 255, 1);
+					transition: 350ms;
+				}
+				&.active {
+					color: $active-link;
+				}
+			}
+		}
+	}
 }

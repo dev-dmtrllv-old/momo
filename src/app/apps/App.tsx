@@ -9,21 +9,22 @@ import "./styles/app.scss";
 const App = Store.withStore(SectionStore, ({ store }) =>
 {
 	return (
-		<FlexBox id="app" fill position="absolute" dir="vertical">
+		<FlexBox id="app" fill position="absolute" dir="horizontal" theme="primary">
 			<FlexItem base={64}>
-				<View position="absolute" fill theme="tertiary">
-					<Header />
-				</View>
+				<ServerList />
 			</FlexItem>
 			<FlexItem>
-				<FlexBox position="absolute" fill>
+				<FlexBox position="absolute" dir="vertical" fill>
 					<FlexItem base={64}>
-						<ServerList />
+						<View position="absolute" fill theme="tertiary">
+							<Header />
+						</View>
 					</FlexItem>
 					<FlexItem>
 						<View id="section-wrapper" position="absolute" fill>
 							<store.sectionComponent />
 						</View>
+
 					</FlexItem>
 				</FlexBox>
 			</FlexItem>
