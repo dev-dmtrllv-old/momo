@@ -10,6 +10,7 @@ $tertiary-bg: #535353;
 
 $active-link: #ffa42c;
 $border-color: rgb(22, 22, 22);
+$active-box-shadow: rgba(255, 164, 44, 0.5);
 
 @mixin primary {
 	color: $primary-fg;

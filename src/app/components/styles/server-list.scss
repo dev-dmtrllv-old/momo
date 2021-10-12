@@ -1,0 +1,22 @@
+@import "app/theme.scss";
+
+#server-list {
+	padding: 5px;
+	.badge {
+		width: 52px;
+		height: 52px;
+		border-radius: 6px;
+		box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0);
+		cursor: pointer;
+		transition: 250ms;
+		user-select: none;
+
+		&:hover, &:active {
+			box-shadow: 0px 0px 5px 0px $active-box-shadow;
+		}
+
+		&.new {
+			font-size: 35px;
+		}
+	}
+}
