@@ -1,6 +1,6 @@
 import React from "react";
 
-export const ServerSideList= () =>
+export const ServerList = () =>
 {
 	return (
 		<div>

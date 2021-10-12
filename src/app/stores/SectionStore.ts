@@ -3,13 +3,17 @@ import { Home } from "app/sections";
 import { action, computed, observable } from "mobx";
 import React from "react";
 import { Store } from "./Store";
+import { CreateServer } from "app/sections/CreateServer";
+import { Settings } from "app/sections/Settings";
 
 @Store.static
 export class SectionStore extends Store
 {
 	private static readonly sections = {
 		"Home": Home,
-		"Server": Server
+		"Server": Server,
+		"Create": CreateServer,
+		"Settings": Settings
 	};
 
 	public static get titles(): (keyof typeof SectionStore.sections)[] { return Object.keys(SectionStore.sections) as any; }

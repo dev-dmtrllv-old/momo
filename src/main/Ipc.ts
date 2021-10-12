@@ -1,6 +1,4 @@
-// import { Server } from "./server/Server";
-
-const isMain = !(process && process.type === 'renderer')
+import { isMain } from "./env";
 
 export class IPC
 {
@@ -14,7 +12,9 @@ export class IPC
 	private static handlers_ = {
 		"start-server": new IPC.Handler("invoke"),
 		"stop-server": new IPC.Handler("invoke"),
-		"is-server-running": new IPC.Handler("msg")
+		"is-server-running": new IPC.Handler("msg"),
+		"update-persistent": new IPC.Handler("async-msg"),
+		"get-persistent": new IPC.Handler("async-msg")
 	};
 
 	private static get handlers() { return this.handlers_ as IpcHandlers; }

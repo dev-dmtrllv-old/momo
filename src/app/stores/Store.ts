@@ -4,7 +4,7 @@ import { makeObservable } from "mobx";
 
 export abstract class Store
 {
-	public static static(ctor: Function)
+	public static static(ctor: any)
 	{
 		const type = ctor as StoreType<any>;
 		let s = Store.get(type);

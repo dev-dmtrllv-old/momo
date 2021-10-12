@@ -39,6 +39,7 @@
 		"./src/**/*",
 		"./src/main/Ipc.ts",
 		"./src/main/AppInfo.ts",
-		"./src/main/env.ts"
+		"./src/main/env.ts",
+		"./src/main/Global.ts"
 	]
 }

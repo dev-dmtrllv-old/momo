@@ -2,22 +2,32 @@ import { app } from "electron";
 import { Window } from "./Window";
 import { MainWindow } from "./MainWindow";
 import { PromptWindow } from "./PrompWindow";
-import { Assets } from "./assets";
+import { Assets } from "./Assets";
 import { Server } from "./server/Server";
 import { IPC } from "./Ipc";
+import { Persistent } from "./Persistent";
+import path from "path";
+import { Settings } from "./Settings";
 
 (process.env as any)["ELECTRON_DISABLE_SECURITY_WARNINGS"] = true;
 
 let mainWindow: MainWindow;
 let promptWindow: PromptWindow;
 
-
 app.whenReady().then(() => 
 {
+	app.setPath("appData", path.resolve(app.getPath("appData"), "momo"));
+	
+	Persistent.register("settings", Settings);
+
+	Persistent.init(app.getPath("appData"));
+
 	IPC.initMain({
 		"start-server": () => Server.get().start(),
 		"stop-server": () => Server.get().stop(),
-		"is-server-running": () => Server.get().isRunning()
+		"is-server-running": () => Server.get().isRunning(),
+		"get-persistent": (name) => Persistent.get(name).serialize(),
+		"update-persistent": (name, key, val) => Persistent.get(name).set(key, val),
 	});
 	
 	const iconPath = Assets.resolvePath("logo.png");
@@ -25,7 +35,7 @@ app.whenReady().then(() =>
 	mainWindow = Window.init(MainWindow, {
 		webPreferences: {
 			nodeIntegration: true,
-			contextIsolation: false
+			contextIsolation: false,
 		},
 		show: false,
 		icon: iconPath
@@ -41,7 +51,6 @@ app.whenReady().then(() =>
 	});
 
 	mainWindow.load("App");
-
 });
 
 app.on("window-all-closed", () => app.quit());

@@ -1,8 +1,7 @@
 import { SectionStore } from "app/stores/SectionStore";
 import { Store } from "app/stores/Store";
 import React from "react";
-import { Header } from "../components/Header";
-import { ServerSideList } from "../components/ServerSideList";
+import { Header } from "app/components";
 import { FlexBox, FlexItem, View } from "../views";
 
 import "./styles/app.scss";
@@ -17,18 +16,9 @@ const App = Store.withStore(SectionStore, ({ store }) =>
 				</View>
 			</FlexItem>
 			<FlexItem>
-				<FlexBox fill position="absolute" dir="horizontal">
-					<FlexItem base={86}>
-						<View position="absolute" fill>
-							<ServerSideList />
-						</View>
-					</FlexItem>
-					<FlexItem>
-						<View id="section-wrapper" position="absolute" fill>
-							<store.sectionComponent />
-						</View>
-					</FlexItem>
-				</FlexBox>
+				<View id="section-wrapper" position="absolute" fill>
+					<store.sectionComponent />
+				</View>
 			</FlexItem>
 		</FlexBox>
 	);

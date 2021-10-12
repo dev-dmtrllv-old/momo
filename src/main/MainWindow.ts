@@ -2,7 +2,7 @@ import { Event, Menu, Tray } from "electron";
 import { Window } from "./Window";
 import fs from "fs";
 import { PromptWindow } from "./PrompWindow";
-import { Assets } from "./assets";
+import { Assets } from "./Assets";
 
 export class MainWindow extends Window
 {
