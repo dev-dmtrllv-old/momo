@@ -1,0 +1,18 @@
+#prompt {
+	padding: 15px;
+	.question {
+		text-align: center;
+		h1 {
+			display: inline-block;
+		}
+	}
+
+	.btns {
+		text-align: right;
+		.btn {
+			margin-top: 15px;
+			margin-left: 15px;
+			display: inline-block;
+		}
+	}
+}

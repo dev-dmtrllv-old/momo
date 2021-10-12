@@ -47,13 +47,13 @@ export class MainWindow extends Window
 			question: "Are you sure you want to quit?",
 			buttons: [
 				{
-					text: "Yes",
-					value: true
+					text: "Cancel",
+					value: false
 				},
 				{
-					text: "No",
-					value: false
-				}
+					text: "Quit",
+					value: true
+				},
 			]
 		});
 		

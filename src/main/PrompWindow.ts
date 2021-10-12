@@ -3,22 +3,47 @@ import { Window } from "./Window";
 
 export class PromptWindow extends Window
 {
-	public prompt(options: PromptOptions)
+	private resolver: ((value: any) => void) | null = null;
+
+	public isOpen() { return this.resolver !== null; }
+
+	public prompt(options: PromptOptions, size: { width: number, height: number } = { width: 640, height: 480 })
 	{
 		return new Promise<any>(async (res, rej) => 
 		{
-			await this.load("Prompt", options);
-			
-			ipcMain.once("response", (event, arg) => {
-				this.window.close();
-				res(arg);
-			});
+			if (this.resolver)
+			{
+				rej("prompt is already open!");
+			}
+			else
+			{
+				this.resolver = res;
+				
+				await this.load("Prompt", options);
+				
+				this.window.setSize(size.width, size.height);
+
+				ipcMain.once("prompt-response", (event, arg) =>
+				{
+					this.resolver = null;
+					this.window.close();
+					res(arg);
+				});
+				ipcMain.once("prompt-ready", (event, width, height) => 
+				{
+					if(width && height)
+						this.window.setSize(width, height);
+					this.window.show();
+				});
+			}
 		});
 	}
 
-	protected onReady = () =>
+	protected onClose = () =>
 	{
-		this.window.show();
+		if(this.resolver)
+			this.resolver(false);
+		this.resolver = null;
 	}
 }
 

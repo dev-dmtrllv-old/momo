@@ -28,9 +28,23 @@ export abstract class Window
 		}
 	}
 
-	private isLoaded_: boolean = false;
+	private create()
+	{
+		const window = new BrowserWindow(this.browserOptions_);
+		window.setMenu(null);
+		window.on("show", () => this.onShow());
+		window.once("ready-to-show", () => this.onReady());
+		window.on("close", (e) => this.close_(e));
+		window.on("closed", () => this.onClosed());
+		return window;
+	}
 
-	protected readonly window: BrowserWindow;
+	private isLoaded_: boolean = false;
+	private readonly browserOptions_: BrowserWindowConstructorOptions;
+
+	private window_: BrowserWindow;
+
+	protected get window() { return this.window_; }
 
 	protected get contents() { return this.window.webContents; }
 
@@ -41,11 +55,8 @@ export abstract class Window
 
 	public constructor(options: BrowserWindowConstructorOptions)
 	{
-		this.window = new BrowserWindow(options);
-		this.window.on("show", () => this.onShow());
-		this.window.once("ready-to-show", () => this.onReady());
-		this.window.on("close", (e) => this.close_(e));
-		this.window.on("closed", () => this.onClosed());
+		this.browserOptions_ = options;
+		this.window_ = this.create();
 	}
 
 	private readonly close_ = (e: Event) =>
@@ -59,6 +70,10 @@ export abstract class Window
 		if (!this.isLoaded_)
 		{
 			this.isLoaded_ = true;
+			
+			if(this.window.isDestroyed())
+				this.window_ = this.create();
+
 			return new Promise<void>((res) => 
 			{
 				setTimeout(() => 
