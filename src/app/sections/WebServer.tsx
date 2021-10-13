@@ -1,8 +1,8 @@
-import { ServerStore } from "app/stores/ServerStore";
+import { WebServerStore } from "app/stores/WebServerStore";
 import { Store } from "app/stores/Store";
 import React from "react";
 
-export const Server = Store.withStore(ServerStore, ({ store }) =>
+export const WebServer = Store.withStore(WebServerStore, ({ store }) =>
 {
 	return (
 		<>

@@ -3,7 +3,7 @@ import { action, computed, observable } from "mobx";
 import { IPC } from "shared/Ipc";
 
 @Store.static
-export class ServerStore extends Store
+export class WebServerStore extends Store
 {
 	@observable
 	private isServerRunning: boolean = false;
@@ -31,7 +31,7 @@ export class ServerStore extends Store
 
 	protected async init()
 	{
-		this.isServerRunning = await IPC.call("is-server-running");
+		this.isServerRunning = await IPC.call("is-web-server-running");
 	}
 
 	@action private setState = (running: boolean, starting: boolean, stopping: boolean) =>
@@ -49,13 +49,13 @@ export class ServerStore extends Store
 			if(this.isServerRunning)
 			{
 				this.setState(true, false, true);
-				await IPC.call("stop-server");
+				await IPC.call("stop-web-server");
 				this.setState(false, false, false);
 			}
 			else
 			{
 				this.setState(false, true, false);
-				await IPC.call("start-server");
+				await IPC.call("start-web-server");
 				this.setState(true, false, false);
 			}
 		}

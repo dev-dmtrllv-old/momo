@@ -2,11 +2,11 @@ import express, { Application } from "express";
 import http from "http";
 import { AddressInfo } from "net";
 
-export class Server
+export class WebServer
 {
-	private static instance_: Server = new Server();
+	private static instance_: WebServer = new WebServer();
 
-	public static get(): Server { return this.instance_; }
+	public static get(): WebServer { return this.instance_; }
 
 	private readonly app_: Application;
 	private server_?: http.Server;

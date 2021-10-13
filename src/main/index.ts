@@ -3,7 +3,7 @@ import { Window } from "./Window";
 import { MainWindow } from "./MainWindow";
 import { PromptWindow } from "./PrompWindow";
 import { Assets } from "./Assets";
-import { Server } from "./server/Server";
+import { WebServer } from "./server/WebServer";
 import { IPC } from "../shared/Ipc";
 import { Persistent } from "./Persistent";
 import path from "path";
@@ -27,9 +27,9 @@ app.whenReady().then(() =>
 	Persistent.init(app.getPath("appData"));
 
 	IPC.initMain({
-		"start-server": () => Server.get().start(),
-		"stop-server": () => Server.get().stop(),
-		"is-server-running": () => Server.get().isRunning(),
+		"start-web-server": () => WebServer.get().start(),
+		"stop-web-server": () => WebServer.get().stop(),
+		"is-web-server-running": () => WebServer.get().isRunning(),
 		"get-persistent": (name) => Persistent.get(name).serialize(),
 		"update-persistent": (name, key, val) => Persistent.get(Servers).set(key, JSON.parse(val)),
 		"create-server": (info, settings) => Persistent.get(Servers).create(JSON.parse(info), JSON.parse(settings)),

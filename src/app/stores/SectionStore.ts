@@ -1,4 +1,4 @@
-import { Server } from "app/sections/Server";
+import { WebServer } from "app/sections/WebServer";
 import { Home } from "app/sections";
 import { action, computed, observable } from "mobx";
 import React from "react";
@@ -11,7 +11,7 @@ export class SectionStore extends Store
 {
 	private static readonly sections = {
 		"Home": Home,
-		"Server": Server,
+		"Web-Server": WebServer,
 		"Create": CreateServer,
 		"Settings": Settings
 	};

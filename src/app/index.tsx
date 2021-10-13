@@ -25,7 +25,7 @@ const getAppInfo = (): AppInfo =>
 
 exec(async () => 
 {
-	(window as any).isServerStarted = await IPC.call("is-server-running");
+	(window as any).isServerStarted = await IPC.call("is-web-server-running");
 
 	const root = document.createElement("div");
 	root.id = "root";

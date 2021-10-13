@@ -20,9 +20,9 @@ export class IPC
 	public static readonly GET_IPC_ID_STRING = "get-ipc-msg-id";
 
 	private static handlers_ = {
-		"start-server": new IPC.Handler<() => Promise<[string, number]>>("invoke"),
-		"stop-server": new IPC.Handler<() => Promise<void>>("invoke"),
-		"is-server-running": new IPC.Handler<() => boolean>("msg"),
+		"start-web-server": new IPC.Handler<() => Promise<[string, number]>>("invoke"),
+		"stop-web-server": new IPC.Handler<() => Promise<void>>("invoke"),
+		"is-web-server-running": new IPC.Handler<() => boolean>("msg"),
 		"update-persistent": new IPC.Handler("async-msg"),
 		"get-persistent": new IPC.Handler<(key: string) => string>("async-msg"),
 		"create-server": new IPC.Handler<(info: string, settings: string) => Promise<CreateServerInfo>>("invoke"),
