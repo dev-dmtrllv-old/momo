@@ -1,6 +1,7 @@
 @import "app/theme.scss";
 
 .input-wrapper {
+	display: inline-block;
 	margin: 5px;
 	.input {
 		background-color: transparent;
@@ -26,7 +27,7 @@
 	&.focus .placeholder, &:not(.empty) .placeholder {
 		left: 4px;
 		font-size: 10px;
-		top: -5px;
+		top: -6px;
 		&::after {
 			content: ":";
 			position: absolute;
