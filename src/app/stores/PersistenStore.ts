@@ -30,20 +30,20 @@ export abstract class PersistenStore<Props> extends Store
 	protected onLoad(props: Props): void {  }
 
 	@action
-	private readonly setVal = <K extends keyof Props>(key: K, val: Props[K]) =>
+	private readonly setVal = async <K extends keyof Props>(key: K, val: Props[K]) =>
 	{
 		const props = { ...this.props, [key]: val };
 		this.props_ = props;
-		IPC.call("update-persistent", this.persistentName, key, val);
+		await IPC.call("update-persistent", this.persistentName, key, JSON.stringify(val));
 	}
 
-	public readonly set = <K extends keyof Props>(key: K, val: Props[K]) =>
+	public readonly set = async <K extends keyof Props>(key: K, val: Props[K]) =>
 	{
 		if (this.props[key] !== val)
-			this.setVal(key, val);
+			await this.setVal(key, val);
 	}
 
 	public readonly get = <K extends keyof Props>(key: K): Props[K] => this.props[key];
 
-	public readonly update = <K extends keyof Props>(key: K, updater: (val: Props[K]) => Props[K]) => this.set(key, updater(this.get(key)));
+	public readonly update = async <K extends keyof Props>(key: K, updater: (val: Props[K]) => Props[K]) => this.set(key, updater(this.get(key)));
 }
