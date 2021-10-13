@@ -31,7 +31,7 @@ app.whenReady().then(() =>
 		"stop-server": () => Server.get().stop(),
 		"is-server-running": () => Server.get().isRunning(),
 		"get-persistent": (name) => Persistent.get(name).serialize(),
-		"update-persistent": (name, key, val) => Persistent.get(name).set(key, val),
+		"update-persistent": (name, key, val) => Persistent.get(name).set(key, JSON.parse(val)),
 	});
 	
 	const iconPath = Assets.resolvePath("logo.png");
