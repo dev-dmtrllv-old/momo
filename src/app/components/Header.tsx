@@ -9,22 +9,20 @@ export const Header: React.FC = Store.withStore(SectionStore, ({ store }) =>
 {
 	return (
 		<View fill id="header">
-			<View className="wrapper" position="absolute">
-				<Container fill >
-					<h1 className="title">{store.title}</h1>
-					<View className="links" position="absolute">
-						{SectionStore.titles.map((title, i) => 
-						{
-							const isActive = title === store.title;
-							return (
-								<a key={i} className={isActive ? "active" : ""} onClick={() => store.routeTo(title)}>
-									{title}
-								</a>
-							);
-						})}
-					</View>
-				</Container>
-			</View>
+			<Container fill className="wrapper" position="relative">
+				<View className="title"><h1>{store.title}</h1></View>
+				<View className="links">
+					{SectionStore.titles.map((title, i) => 
+					{
+						const isActive = title === store.title;
+						return (
+							<a key={i} className={isActive ? "active" : ""} onClick={() => store.routeTo(title)}>
+								{title}
+							</a>
+						);
+					})}
+				</View>
+			</Container>
 		</View>
 	);
 });
