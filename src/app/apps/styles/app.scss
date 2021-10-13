@@ -1,7 +1,8 @@
-#app
-{
-	#section-wrapper
-	{
+#app {
+	#section-wrapper {
 		overflow: auto;
+		.content {
+			min-width: 640px;
+		}
 	}
 }

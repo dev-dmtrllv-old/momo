@@ -22,9 +22,10 @@ const App = Store.withStore(SectionStore, ({ store }) =>
 					</FlexItem>
 					<FlexItem>
 						<View id="section-wrapper" position="absolute" fill>
-							<store.sectionComponent />
+							<View className="content">
+								<store.sectionComponent />
+							</View>
 						</View>
-
 					</FlexItem>
 				</FlexBox>
 			</FlexItem>

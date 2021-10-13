@@ -1,16 +1,14 @@
 @import "app/theme.scss";
 
 #header {
-	padding: 5px 15px;
 	border-bottom: 1px solid $border-color;
 
 	.wrapper {
 		bottom: 5px;
-		h1 {
-			display: inline-block;
-		}
+		width: 100%;
 		.links {
 			bottom: 5px;
+			right: 0;
 			a {
 				padding: 5px;
 				cursor: pointer;
