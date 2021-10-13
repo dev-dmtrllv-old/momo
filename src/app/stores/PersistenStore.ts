@@ -1,6 +1,7 @@
 import { IPC } from "shared/Ipc";
 import { action, computed, makeObservable, observable } from "mobx";
 import { Store } from "./Store";
+import { ipcRenderer } from "electron";
 
 export abstract class PersistenStore<Props> extends Store
 {
@@ -18,6 +19,7 @@ export abstract class PersistenStore<Props> extends Store
 	protected async init()
 	{
 		const data = await IPC.call("get-persistent", this.persistentName);
+		ipcRenderer.on(`persistent-${this.persistentName}-updated`, (e, key, val) => this.setVal(key, JSON.parse(val)));
 		
 		if(!data)
 			throw new Error("Could not get data!");

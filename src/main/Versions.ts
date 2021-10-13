@@ -1,5 +1,5 @@
 import { Persistent } from "./Persistent";
-import https from "https";
+import { utils } from "../utils";
 
 export class Versions extends Persistent<MCVersions>
 {
@@ -22,16 +22,11 @@ export class Versions extends Persistent<MCVersions>
 	}
 }
 
-export const getVersions = (): Promise<MCVersions> => new Promise(async (res, rej) =>
+export const getVersions = async (): Promise<MCVersions> =>
 {
-	https.get("https://launchermeta.mojang.com/mc/game/version_manifest.json", (response) => 
-	{
-		let data: string = "";
-		response.on("data", (d) => data += d);
-		response.on("end", () => res(JSON.parse(data)));
-		response.on("error", rej);
-	});
-});
+	const data = await utils.http.get("https://launchermeta.mojang.com/mc/game/version_manifest.json");
+	return JSON.parse(data);
+};
 
 export type MCVersions = {
 	latest: {

@@ -19,10 +19,10 @@ export class SectionStore extends Store
 	public static get titles(): (keyof typeof SectionStore.sections)[] { return Object.keys(SectionStore.sections) as any; }
 
 	@observable
-	private sectionComponent_: React.FC = Home;
+	private sectionComponent_: React.FC = CreateServer;
 	
 	@observable
-	private title_: string = "Home";
+	private title_: keyof typeof SectionStore.sections = "Create";
 
 	@computed
 	public get sectionComponent() { return this.sectionComponent_; }

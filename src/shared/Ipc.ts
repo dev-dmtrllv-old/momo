@@ -1,27 +1,38 @@
 import { isMain } from "./env";
+import type { CreateServerInfo } from "../main/Servers";
+
+class IpcHandler<T extends HandlerCallback = HandlerCallback>
+{
+	public type!: HandlerType;
+	public handler!: T;
+
+	public constructor(type: HandlerType, handler?: T)
+	{
+		this.type = type;
+		this.handler = handler!;
+	};
+}
 
 export class IPC
 {
-	private static readonly Handler = class Handler
-	{
-		public constructor(public type: HandlerType, public handler: HandlerCallback = () => { }) { };
-	};
+	private static readonly Handler = IpcHandler;
 
 	public static readonly GET_IPC_ID_STRING = "get-ipc-msg-id";
 
 	private static handlers_ = {
-		"start-server": new IPC.Handler("invoke"),
-		"stop-server": new IPC.Handler("invoke"),
-		"is-server-running": new IPC.Handler("msg"),
+		"start-server": new IPC.Handler<() => Promise<[string, number]>>("invoke"),
+		"stop-server": new IPC.Handler<() => Promise<void>>("invoke"),
+		"is-server-running": new IPC.Handler<() => boolean>("msg"),
 		"update-persistent": new IPC.Handler("async-msg"),
-		"get-persistent": new IPC.Handler("async-msg")
+		"get-persistent": new IPC.Handler<(key: string) => string>("async-msg"),
+		"create-server": new IPC.Handler<(info: string, settings: string) => Promise<CreateServerInfo>>("invoke"),
 	};
 
 	private static get handlers() { return this.handlers_ as IpcHandlers; }
 
 	private static isInitialized_ = false;
 
-	public static initMain(initHandlers: Partial<{ [K in keyof typeof IPC.handlers_]: HandlerCallback; }>)
+	public static initMain(initHandlers: { [K in keyof typeof IPC.handlers_]: (typeof IPC)["handlers_"][K]["handler"]; })
 	{
 		if (isMain)
 		{
@@ -36,8 +47,8 @@ export class IPC
 				{
 					const channel = String(k);
 					let { type, handler } = (this.handlers as any)[k];
-					
-					if((initHandlers as any)[channel])
+
+					if ((initHandlers as any)[channel])
 						handler = (initHandlers as any)[channel];
 
 					switch (type)
@@ -57,6 +68,14 @@ export class IPC
 							break;
 					}
 				}
+
+				const k = Object.keys(initHandlers);
+				for (const key in IPC.handlers_)
+				{
+					if (!k.includes(key))
+						console.warn(`missing IPC method for ${key}!`);
+				}
+
 			}
 		}
 	}
@@ -65,11 +84,11 @@ export class IPC
 
 	private static channelToResponseString = (channel: string, id: number) => `${channel}-response-#${id}`;
 
-	public static readonly call = (key: keyof typeof IPC.handlers_, ...args: any[]) => new Promise<any>(async (resolve, reject) => 
+	public static readonly call = <K extends keyof typeof IPC.handlers_>(key: K, ...args: IpcHandlerArgs<typeof IPC.handlers_[K]["handler"]>) => new Promise<any>(async (resolve, reject) => 
 	{
-		if(!(IPC.handlers as any)[key])
+		if (!(IPC.handlers as any)[key])
 			reject(`${key} not found!`);
-			
+
 		const { type, handler } = (IPC.handlers as any)[key];
 
 		const channel = String(key);
@@ -111,8 +130,8 @@ type HandlerType = "invoke" | "msg" | "async-msg";
 type HandlerCallback = (...args: any[]) => any;
 
 export type IpcHandlers = {
-	[name: string]: {
-		type: HandlerType;
-		handler: HandlerCallback;
-	};
+	[name: string]: IpcHandler;
 };
+
+type IpcHandlerArgs<T> = T extends (...args: infer Args) => any ? Args : never;
+type IpcHandlerReturnType<T> = T extends (...args: any[]) => infer R ? R : never;

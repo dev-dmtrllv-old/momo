@@ -1,30 +1,14 @@
 import { utils } from "../utils";
 import { isMain } from "../shared/env";
 import { IPC } from "../shared/Ipc";
+import { Window } from "./Window";
+import { MainWindow } from "./MainWindow";
 
 export abstract class Persistent<Props>
 {
 	private static types_: { [key: string]: PersistentType<any> } = {};
 
 	private static objects_: { [key: string]: Persistent<any> } = {};
-
-	private static matchPropsKeys(a: any, b: any)
-	{
-		const ka = Object.keys(a);
-		const kb = Object.keys(b);
-		
-		if(ka.length === kb.length)
-		{
-			for(const k of ka)
-				if(!kb.find(check => check == k))
-					return false;
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
 
 	public static register(name: string, type: PersistentType<any>)
 	{
@@ -56,8 +40,6 @@ export abstract class Persistent<Props>
 					fs.writeFileSync(p, JSON.stringify(props), "utf-8");
 				}
 
-				console.log(p);
-
 				props = JSON.parse(fs.readFileSync(p));
 
 				if(!utils.equals(props, defaultProps))
@@ -71,6 +53,8 @@ export abstract class Persistent<Props>
 		}
 	}
 
+	public static get<T extends Persistent<any>>(arg: PersistentType<T>): T;
+	public static get<T extends Persistent<any>>(arg: string): Persistent<any> | null;
 	public static get<T extends Persistent<any>>(arg: PersistentType<T> | string): T | null
 	{
 		if (typeof arg === "string")
@@ -103,7 +87,7 @@ export abstract class Persistent<Props>
 
 	protected abstract defaultProps(): Props | Promise<Props>;
 
-	public readonly set = <K extends keyof Props>(key: K, val: Props[K]) =>
+	public readonly set = async <K extends keyof Props>(key: K, val: Props[K]) =>
 	{
 		if (this.props[key] !== val)
 		{
@@ -111,11 +95,12 @@ export abstract class Persistent<Props>
 			if (isMain)
 			{
 				const fs = require("fs");
+				Window.get(MainWindow).send(`persistent-${this.name}-updated`, key, JSON.stringify(val));
 				fs.writeFileSync(this.path, JSON.stringify(this.props), "utf-8");
 			}
 			else
 			{
-				IPC.call("update-persistent", this.name, key, val);
+				await IPC.call("update-persistent", this.name, key, val);
 			}
 		}
 	}

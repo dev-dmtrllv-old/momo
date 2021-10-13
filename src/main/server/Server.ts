@@ -22,7 +22,7 @@ export class Server
 
 	public start()
 	{
-		return new Promise<any[]>((resolve, reject) => 
+		return new Promise<[string, number]>((resolve, reject) => 
 		{
 			if (this.isRunning_)
 			{

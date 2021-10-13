@@ -1,12 +1,14 @@
 import * as String from "./string";
 import * as Math from "./math";
 import * as React from "./react";
+import * as HttpModule from "./http";
 
 export namespace utils
 {
 	export const string = String;
 	export const math = Math;
 	export const react = React;
+	export const http = HttpModule.http;
 
 	export const arrayEquals = (a: any[], b: any[]) => 
 	{

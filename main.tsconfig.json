@@ -19,7 +19,8 @@
 		"resolveJsonModule": true
 	},
 	"include": [
-		"src/main/**/*"
+		"src/main/**/*",
+		"src/shared/**/*"
 	],
 	"exclude": [
 		"src/app"

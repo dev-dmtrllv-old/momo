@@ -88,6 +88,11 @@ export abstract class Window
 		return new Promise<void>((res) => res());
 	}
 
+	public send(channel: string, ...args: any[])
+	{
+		this.window.webContents.send(channel, ...args);
+	}
+
 	protected init = () => { };
 	protected onLoad = () => { };
 	protected onReady = () => { };
