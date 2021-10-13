@@ -7,4 +7,6 @@ export class Servers extends Persistent<ServersProps>
 	{
 		return { servers: [] };
 	}
+
+	public get size() { return this.props.servers.length; }
 }
