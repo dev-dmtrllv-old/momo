@@ -30,7 +30,7 @@ export abstract class Persistent<Props>
 				const p = path.resolve(appDataPath, name + ".json");
 				const o: Persistent<any> = this.objects_[name] = new this.types_[name](name, p);
 				
-				let props: any;
+				let props: any = {};
 				
 				const defaultProps = await o.defaultProps();
 
@@ -39,14 +39,20 @@ export abstract class Persistent<Props>
 					props = o.defaultProps();
 					fs.writeFileSync(p, JSON.stringify(props), "utf-8");
 				}
+				else
+				{
+					props = JSON.parse(fs.readFileSync(p, "utf-8"));
+				}
 
-				props = JSON.parse(fs.readFileSync(p));
 
 				if(!utils.equals(props, defaultProps))
 				{
 					props = { ...defaultProps, ...props };
 					fs.writeFileSync(p, JSON.stringify(props), "utf-8");
 				}
+
+				if(typeof props === "string")
+					console.warn(`${p}: props is string instead of object!!!`);
 
 				o.props = props;
 			}

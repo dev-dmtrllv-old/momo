@@ -19,17 +19,19 @@ export abstract class PersistenStore<Props> extends Store
 	protected async init()
 	{
 		const data = await IPC.call("get-persistent", this.persistentName);
+
 		ipcRenderer.on(`persistent-${this.persistentName}-updated`, (e, key, val) => this.setVal(key, JSON.parse(val)));
-		
-		if(!data)
+
+		if (!data)
 			throw new Error("Could not get data!");
 
 		this.props_ = JSON.parse(data);
+
 		this.onLoad(this.props);
 		makeObservable(this);
 	}
 
-	protected onLoad(props: Props): void {  }
+	protected onLoad(props: Props): void { }
 
 	@action
 	private readonly setVal = async <K extends keyof Props>(key: K, val: Props[K]) =>

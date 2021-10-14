@@ -103,14 +103,16 @@ export class IPC
 			switch (type)
 			{
 				case "invoke":
-					console.log("invoke");
+					console.log(`invoke: ${channel}, args:`, ...args);
 					ipcRenderer.invoke(channel, ...args).then(resolve).catch(reject);
 					break;
 				case "msg":
+					console.log(`msg: ${channel}, args:`, ...args);
 					resolve(ipcRenderer.sendSync(channel, ...args));
 					break;
 				case "async-msg":
 					{
+						console.log(`async-msg: ${channel}, args:`, ...args);
 						const id = await ipcRenderer.invoke(this.GET_IPC_ID_STRING);
 						ipcRenderer.send(channel, id, ...args);
 						ipcRenderer.once(this.channelToResponseString(channel, id), (event, ...args) => resolve(args));
