@@ -1,5 +1,5 @@
 import { isMain } from "./env";
-import type { CreateServerInfo } from "../main/Servers";
+import type { CreateServerInfo, DeleteServerInfo } from "../main/Servers";
 
 class IpcHandler<T extends HandlerCallback = HandlerCallback>
 {
@@ -26,6 +26,7 @@ export class IPC
 		"update-persistent": new IPC.Handler("async-msg"),
 		"get-persistent": new IPC.Handler<(key: string) => string>("async-msg"),
 		"create-server": new IPC.Handler<(info: string, settings: string) => Promise<CreateServerInfo>>("invoke"),
+		"delete-server": new IPC.Handler<(name: string) => Promise<DeleteServerInfo>>("invoke"),
 	};
 
 	private static get handlers() { return this.handlers_ as IpcHandlers; }

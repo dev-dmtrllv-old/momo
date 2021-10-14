@@ -53,13 +53,19 @@ export class Servers extends Persistent<ServersProps>
 		return { success: true };
 	}
 
-	public async delete()
+	public async delete(name: string): Promise<DeleteServerInfo>
 	{
-
+		console.log("delete", name);
+		return { success: true };
 	}
 }
 
 export type CreateServerInfo = {
+	error?: string;
+	success: boolean;
+};
+
+export type DeleteServerInfo = {
 	error?: string;
 	success: boolean;
 };
