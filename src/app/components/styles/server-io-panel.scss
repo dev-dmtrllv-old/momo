@@ -1,0 +1,18 @@
+.server-io-panel {
+	width: 100%;
+	.output {
+		overflow-y: auto;
+	}
+	.in {
+		padding-top: 15px;
+		.input-wrapper {
+			display: block;
+			& > input {
+				display: block;
+				width: 100%;
+				position: absolute;
+				box-sizing: border-box;
+			}
+		}
+	}
+}

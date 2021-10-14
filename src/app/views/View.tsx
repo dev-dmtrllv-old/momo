@@ -3,7 +3,7 @@ import { utils } from "../../utils";
 
 import "./styles/view.scss";
 
-export const View: React.FC<WithReactProps<ViewProps>> = ({ type = "div", children, className, position = "relative", center, fill, theme = "inherit", ...props }) => 
+export const View: React.FC<WithReactProps<ViewProps>> = ({ type = "div", children, className, position = "relative", center, fill, theme = "inherit", forwardRef, ...props }) => 
 {
 	const cn = utils.react.getClassFromProps("view", {
 		[position || "relative"]: true,
@@ -13,7 +13,7 @@ export const View: React.FC<WithReactProps<ViewProps>> = ({ type = "div", childr
 		[theme]: true
 	});
 
-	return React.createElement(type, { ...props, className: cn }, children);
+	return React.createElement(type, { ...props, className: cn, ref: forwardRef }, children);
 };
 
 export type WithViewProps<Props extends {}, T extends HTMLElement = HTMLElement> = WithReactProps<ViewProps & Props, T>;
@@ -26,6 +26,7 @@ export type ViewProps = {
 	center?: boolean | ViewDirection;
 	position?: ViewPosition;
 	theme?: "primary" | "secundary" | "tertiary" | "inherit";
+	forwardRef?: React.LegacyRef<HTMLDivElement>;
 }
 
 export type ViewPosition = "relative" | "static" | "absolute" | "fixed";

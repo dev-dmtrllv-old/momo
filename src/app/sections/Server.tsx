@@ -1,13 +1,14 @@
+import { ServerIOPanel } from "app/components/ServerIOPanel";
 import { ServersStore } from "app/stores/ServersStore";
 import { Store } from "app/stores/Store";
 import { Button, Container, Input } from "app/views";
 import React from "react";
 import { useHistory, useParams } from "react-router-dom";
 
+import "./styles/server.scss";
+
 export const Server = Store.withStore(ServersStore, ({ store }) =>
 {
-	const [val, setVal] = React.useState("");
-
 	const { replace } = useHistory();
 	const { name } = useParams<{ name: string }>();
 
@@ -15,7 +16,7 @@ export const Server = Store.withStore(ServersStore, ({ store }) =>
 	const v = s ? s.version : "unknown";
 
 	return (
-		<Container>
+		<Container id="server-info">
 			<h1>hi server {name}!</h1>
 			<p>version: {v}</p>
 			<Button onClick={() => { replace("/"); store.delete(name); }}>delete</Button>
@@ -23,10 +24,7 @@ export const Server = Store.withStore(ServersStore, ({ store }) =>
 			<h1>
 				Data
 			</h1>
-			<div>
-				{store.getOutputs(name).map((n, i) => <p key={i}>{n}</p>)}
-				<Input type="text" onChange={(e) => setVal(e.target.value)} value={val} placeholder="" name="command" onKeyDown={(e) => { if(e.code === "Enter") { store.sendCommand(name, val); setVal(""); } }}/>
-			</div>
+			<ServerIOPanel lines={store.getOutputs(name)} onInput={(cmd) => store.sendCommand(name, cmd)} />
 		</Container>
 	);
 });
