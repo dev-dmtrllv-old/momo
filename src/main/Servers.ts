@@ -58,14 +58,38 @@ export class Servers extends Persistent<ServersProps>
 	{
 		console.log("delete", name);
 
-		const s = this.get("servers").find(s => s.name === name);
+		let servers = [...this.get("servers")];
+		let index = -1;
 
-		if(s)
+		const s = servers.find((s, i) => 
 		{
+			if(s.name === name)
+			{
+				index = i;
+				return true;
+			}
+			return false;
+		});
 
+		if(!s || index < 0)
+			return { success: false, error: "missing from servers.json!" };
+
+		const serversPath = Persistent.get<Settings>(Settings).get("serversPath");
+		const p = path.join(serversPath, name);
+
+		servers.splice(index, 1);
+		
+		this.set("servers", servers);
+
+		if(await fs.exists(p))
+		{
+			await fs.rmdir(p);
+			return { success: true }
 		}
-
-		return { success: true };
+		else
+		{
+			return { success: false, error: `Could not find folder ${p}!` };
+		}
 	}
 }
 

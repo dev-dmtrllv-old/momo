@@ -95,7 +95,7 @@ export abstract class Persistent<Props>
 
 	public readonly set = async <K extends keyof Props>(key: K, val: Props[K]) =>
 	{
-		if (this.props[key] !== val)
+		if (!utils.equals(this.props[key], val))
 		{
 			this.props[key] = val;
 			if (isMain)
