@@ -23,19 +23,22 @@ let proc = null;
 const restart = () =>
 {
 	if (proc !== null)
-		proc.kill();
+		proc.kill("SIGTERM");
 
-	findProccess("name", "electron").then((v) => 
+	setTimeout(() => 
 	{
-		v.forEach(item => 
+		findProccess("name", "electron").then((v) => 
 		{
-			process.kill(item.pid);
+			v.forEach(item => 
+			{
+				process.kill(item.pid);
+			});
+			setTimeout(() => 
+			{
+				proc = spawn("electron", [".", "--dev"], { cwd: path.resolve(__dirname, ".."), stdio: "inherit" });
+			}, 500);
 		});
-		setTimeout(() => 
-		{
-			proc = spawn("electron", [".", "--dev"], { cwd: path.resolve(__dirname, ".."), stdio: "inherit" });
-		}, 500);
-	});
+	}, 150);
 }
 
 const isRunning = () => didAppCompile && didMainCompile;

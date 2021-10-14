@@ -23,6 +23,7 @@
 			"*.code-workspace": true,
 			"package.json": true,
 			"package-lock.json": true,
+			"builds": true
 		}
 	}
 }
