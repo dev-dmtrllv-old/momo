@@ -24,7 +24,7 @@ export class IPC
 		"stop-web-server": new IPC.Handler<() => Promise<void>>("invoke"),
 		"is-web-server-running": new IPC.Handler<() => boolean>("msg"),
 		"update-persistent": new IPC.Handler("async-msg"),
-		"get-persistent": new IPC.Handler<(key: string) => string>("async-msg"),
+		"get-persistent": new IPC.Handler<(key: string) => any>("async-msg"),
 		"create-server": new IPC.Handler<(info: string, settings: string) => Promise<CreateServerInfo>>("invoke"),
 		"delete-server": new IPC.Handler<(name: string) => Promise<DeleteServerInfo>>("invoke"),
 	};
@@ -52,20 +52,23 @@ export class IPC
 					if ((initHandlers as any)[channel])
 						handler = (initHandlers as any)[channel];
 
+					const parseArgs = (args: any[]): any[] => args.map(arg => JSON.parse(arg));
+
 					switch (type)
 					{
 						case "invoke":
-							ipcMain.handle(channel, async (e, ...args) => await handler(...args));
+							ipcMain.handle(channel, async (e, ...args) => { console.log(...parseArgs(args)); return await handler(...parseArgs(args)) });
 							break;
 						case "async-msg":
 							ipcMain.on(channel, async (e, id, ...args) => 
 							{
-								const data = await handler(...args);
+								{ console.log(...parseArgs(args)); }
+								const data = await handler(...parseArgs(args));
 								e.reply(this.channelToResponseString(channel, id), data);
 							});
 							break;
 						case "msg":
-							ipcMain.on(channel, async (e, ...args) => { e.returnValue = (await handler(...args)); });
+							ipcMain.on(channel, async (e, ...args) => { e.returnValue = (await handler(...parseArgs(args))); });
 							break;
 					}
 				}
@@ -85,7 +88,7 @@ export class IPC
 
 	private static channelToResponseString = (channel: string, id: number) => `${channel}-response-#${id}`;
 
-	public static readonly call = <K extends keyof typeof IPC.handlers_>(key: K, ...args: IpcHandlerArgs<typeof IPC.handlers_[K]["handler"]>) => new Promise<any>(async (resolve, reject) => 
+	public static readonly call = <K extends keyof typeof IPC.handlers_>(key: K, ...args: IpcHandlerArgs<typeof IPC.handlers_[K]["handler"]>) => new Promise<IpcHandlerReturnType<typeof IPC.handlers_[K]["handler"]>>(async (resolve, reject) => 
 	{
 		if (!(IPC.handlers as any)[key])
 			reject(`${key} not found!`);
@@ -100,23 +103,31 @@ export class IPC
 		}
 		else
 		{
+			const parseArgs = (args: any[]): any[] => args.map(arg => JSON.stringify(arg));
+
 			const ipcRenderer = require("electron").ipcRenderer;
 			switch (type)
 			{
 				case "invoke":
-					console.log(`invoke: ${channel}, args:`, ...args);
-					ipcRenderer.invoke(channel, ...args).then(resolve).catch(reject);
+					console.log(`invoke: ${channel}, args:`, ...parseArgs(args));
+
+					ipcRenderer.invoke(channel, ...args).then((args: string) => resolve(JSON.parse(args))).catch(reject);
 					break;
 				case "msg":
-					console.log(`msg: ${channel}, args:`, ...args);
-					resolve(ipcRenderer.sendSync(channel, ...args));
+					console.log(`msg: ${channel}, args:`, ...parseArgs(args));
+
+					resolve(JSON.parse(ipcRenderer.sendSync(channel, ...parseArgs(args))));
 					break;
 				case "async-msg":
 					{
-						console.log(`async-msg: ${channel}, args:`, ...args);
+						console.log(`async-msg: ${channel}, args:`, ...parseArgs(args));
+
 						const id = await ipcRenderer.invoke(this.GET_IPC_ID_STRING);
-						ipcRenderer.send(channel, id, ...args);
-						ipcRenderer.once(this.channelToResponseString(channel, id), (event, ...args) => resolve(args));
+						ipcRenderer.send(channel, id, ...parseArgs(args));
+						ipcRenderer.once(this.channelToResponseString(channel, id), (event, arg) => 
+						{
+							resolve(JSON.parse(arg));
+						});
 					}
 					break;
 			}

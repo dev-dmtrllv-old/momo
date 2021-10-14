@@ -30,9 +30,9 @@ app.whenReady().then(() =>
 		"start-web-server": () => WebServer.get().start(),
 		"stop-web-server": () => WebServer.get().stop(),
 		"is-web-server-running": () => WebServer.get().isRunning(),
-		"get-persistent": (name) => Persistent.get(name).serialize(),
-		"update-persistent": (name, key, val) => Persistent.get(Servers).set(key, JSON.parse(val)),
-		"create-server": (info, settings) => Persistent.get(Servers).create(JSON.parse(info), JSON.parse(settings)),
+		"get-persistent": (name): any => Persistent.get(name).serialize(),
+		"update-persistent": (name, key, val) => Persistent.get(Servers).set(key, val),
+		"create-server": (info: any, settings: any) => Persistent.get(Servers).create(info, settings),
 		"delete-server": (name) => Persistent.get(Servers).delete(name),
 	});
 	

@@ -123,3 +123,5 @@ export abstract class Persistent<Props>
 
 type PersistentType<T extends Persistent<any>> = new (name: string, path: string) => T;
 type InferPersistenProps<T> = T extends Persistent<infer P> ? P : never;
+
+export type PersistentKeys<T extends Persistent<any>> = T extends Persistent<infer Props> ? keyof Props : never;

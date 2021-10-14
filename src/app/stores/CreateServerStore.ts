@@ -45,7 +45,8 @@ export class CreateServerStore extends Store
 
 	protected async init()
 	{
-		this.versionsInfo_ = JSON.parse(await IPC.call("get-persistent", "versions"));
+		this.versionsInfo_ = await IPC.call("get-persistent", "versions");
+		console.log(this.versionsInfo_);
 		this.reset();
 	}
 
@@ -71,7 +72,7 @@ export class CreateServerStore extends Store
 		else
 		{
 			const r = await IPC.call("create-server", JSON.stringify(this.inputValues), JSON.stringify({}));
-			console.log(r.data);
+
 		}
 	}
 }

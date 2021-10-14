@@ -24,8 +24,8 @@ export abstract class PersistenStore<Props> extends Store
 
 		if (!data)
 			throw new Error("Could not get data!");
-
-		this.props_ = JSON.parse(data);
+		
+		this.props_ = data;
 
 		this.onLoad(this.props);
 		makeObservable(this);

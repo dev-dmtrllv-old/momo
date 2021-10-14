@@ -2,7 +2,6 @@ import React from "react";
 import ReactDOM from "react-dom";
 
 import { AppInfo } from "../shared/AppInfo";
-import { IPC } from "../shared/Ipc";
 import { Store } from "./stores/Store";
 
 const exec = (callback: Function) => callback();
