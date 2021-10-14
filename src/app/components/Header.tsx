@@ -11,7 +11,7 @@ export const Header: React.FC = ({ }) =>
 {
 	const location = useLocation();
 
-	const title_ = Sections.getTitle(location.pathname).title;
+	const title_ = Sections.getTitle(location.pathname);
 	
 	const t = typeof title_ === "function" ? title_(location.pathname) : title_;
 

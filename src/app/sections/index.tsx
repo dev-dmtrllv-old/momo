@@ -12,6 +12,7 @@ import { WebServer } from "./WebServer";
 import { Settings } from "./Settings";
 import { Server } from "./Server";
 import { Servers } from "./Servers";
+import { matchPath } from "react-router";
 
 export namespace Sections
 {
@@ -43,13 +44,15 @@ export namespace Sections
 			link: "settings",
 			aliases: ["/settings"]
 		},
-		"/server": {
+		"/servers": {
 			component: Servers,
+			exact: true,
 			title: "Servers",
 		},
-		"/server/:name": {
+		"/servers/:name": {
 			component: Server,
 			title: (path: string) => path.split("/").reverse()[0],
+			exact: true
 		}
 	};
 
@@ -65,7 +68,13 @@ export namespace Sections
 		return l;
 	})();
 
-	export const getTitle = (path: string) => routes[path] || "";
+	export const getTitle = (path: string): string | ((path: string) => string) => 
+	{
+		for(const p in routes)
+			if(p === path || matchPath(path, { path: p, exact: routes[p].exact }))
+				return routes[p].title;
+		return "";
+	}
 };
 
 type SectionInfo = {

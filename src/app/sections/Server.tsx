@@ -1,12 +1,20 @@
-import { ServerStore } from "app/stores/ServerStore";
+import { ServersStore } from "app/stores/ServersStore";
 import { Store } from "app/stores/Store";
+import { Container } from "app/views";
 import React from "react";
+import { useParams } from "react-router-dom";
 
-export const Server = Store.withStore(ServerStore, ({ store }) =>
+export const Server = Store.withStore(ServersStore, ({ store }) =>
 {
+	const { name } = useParams<{ name: string }>();
+	
+	const s = store.get("servers").find(s => s.name === name);
+	const v = s ? s.version : "unknown";
+
 	return (
-		<>
-			hi
-		</>
+		<Container>
+			<h1>hi server {name}!</h1>
+			<p>version: {v}</p>
+		</Container>
 	);
 });

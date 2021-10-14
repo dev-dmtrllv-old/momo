@@ -3,14 +3,14 @@ import { HashRouter, Switch, Route } from "react-router-dom";
 import { Header, ServerList } from "app/components";
 import { FlexBox, FlexItem, View } from "../views";
 
-import { Home } from "app/sections";
+import { Home, Sections } from "app/sections";
 import { WebServer } from "app/sections/WebServer";
 import { CreateServer } from "app/sections/CreateServer";
 import { Settings } from "app/sections/Settings";
 
 import "./styles/app.scss";
 
-const App = ({  }) =>
+const App = ({ }) =>
 {
 	return (
 		<HashRouter>
@@ -29,18 +29,14 @@ const App = ({  }) =>
 							<View id="section-wrapper" position="absolute" fill>
 								<View className="content">
 									<Switch>
-										<Route exact path="/">
-											<Home />
-										</Route>
-										<Route exact path="/web-server">
-											<WebServer />
-										</Route>
-										<Route exact path="/create-server">
-											<CreateServer />
-										</Route>
-										<Route exact path="/settings">
-											<Settings />
-										</Route>
+										{Object.keys(Sections.routes).map((path, i) => 
+										{
+											const { component, exact, } = Sections.routes[path];
+
+											return (
+												<Route key={i} path={path} exact={exact}>{React.createElement(component)}</Route>
+											);
+										}).flat()}
 									</Switch>
 								</View>
 							</View>

@@ -61,6 +61,8 @@ const ToolTip: React.FC<{ hoverEl: HTMLDivElement | null, show: boolean }> = ({ 
 
 export const ServerList = Store.withStore(ServerListStore, ({ store }) =>
 {
+	const history = useHistory();
+
 	const [hoverState, setHoverState] = React.useState<ServerListState>({ hoverIndex: -2, hoverEl: null })
 
 	const onHover = (e: React.MouseEvent<HTMLDivElement>, i: number) => 
@@ -75,12 +77,20 @@ export const ServerList = Store.withStore(ServerListStore, ({ store }) =>
 			setHoverState({ hoverIndex: -2, hoverEl: hoverState.hoverEl });
 	};
 
+	const onClick = (i: number) =>
+	{
+		const server = store.get("servers")[i];
+		
+		if(server)
+			history.push(`/servers/${server.name}`);
+	};
+
 	return (
 		<>
 			<View id="server-list" position="absolute" theme="secundary" fill>
 				<View className="badge-wrapper">
 					<NewServerBadge onHover={(e) => onHover(e, -1)}  onHoverEnd={(e) => onHoverEnd(e, -1)}/>
-					{store.props.servers.map((s, i) => <ListBadge serverInfo={s} key={i} onHover={(e) => onHover(e, i)} onHoverEnd={(e) => onHoverEnd(e, i)} />)}
+					{store.props.servers.map((s, i) => <ListBadge serverInfo={s} key={i} onClick={() => onClick(i)} onHover={(e) => onHover(e, i)} onHoverEnd={(e) => onHoverEnd(e, i)} />)}
 				</View>
 				<ToolTip hoverEl={hoverState.hoverEl} show={hoverState.hoverIndex > -2}>
 					{hoverState.hoverIndex > -1 ? (
@@ -108,6 +118,7 @@ type ListBadgeProps = {
 type BadgeProps = {
 	onHover?: (e: React.MouseEvent<HTMLDivElement>) => any;
 	onHoverEnd?: (e: React.MouseEvent<HTMLDivElement>) => any;
+	onClick?: (e: React.MouseEvent<HTMLDivElement>) => any;
 };
 
 type ServerListState = {
