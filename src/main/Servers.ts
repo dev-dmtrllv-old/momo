@@ -47,11 +47,10 @@ export class Servers extends Persistent<ServersProps>
 		}
 		
 		await utils.http.download(serverJarPath, downloadInfo.url);
+
 		this.update("servers", s => [...s, info]);
 
-		const s = { success: true };
-		(s as any).data = serverJarPath;
-		return s;
+		return { success: true };
 	}
 
 	public async delete()

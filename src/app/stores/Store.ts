@@ -22,7 +22,7 @@ export abstract class Store
 		return (props: P) => React.createElement(observer(component), { ...props, store: this.get<T>(type)! });
 	}
 
-	public static withStores<T extends StoreTypeGroup, P>(types: T, component: React.FC<P & T>): React.FC<P>
+	public static withStores<T extends StoreTypeGroup, P>(types: T, component: React.FC<P & StoreGroup<T>>): React.FC<P>
 	{
 		return (props: P) => 
 		{

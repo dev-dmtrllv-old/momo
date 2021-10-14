@@ -5,6 +5,7 @@ import { View, WithViewProps } from "app/views";
 import React from "react";
 import { ServerInfo } from "shared/ServerInfo";
 import { utils } from "utils";
+import { ServersStore } from "app/stores/ServersStore";
 
 import "./styles/server-list.scss";
 
@@ -59,7 +60,7 @@ const ToolTip: React.FC<{ hoverEl: HTMLDivElement | null, show: boolean }> = ({ 
 	);
 };
 
-export const ServerList = Store.withStore(ServerListStore, ({ store }) =>
+export const ServerList = Store.withStores({ listStore: ServerListStore, serversStore: ServersStore }, ({ listStore, serversStore }) =>
 {
 	const history = useHistory();
 
@@ -79,7 +80,7 @@ export const ServerList = Store.withStore(ServerListStore, ({ store }) =>
 
 	const onClick = (i: number) =>
 	{
-		const server = store.get("servers")[i];
+		const server = serversStore.get("servers")[i];
 		
 		if(server)
 			history.push(`/servers/${server.name}`);
@@ -90,18 +91,18 @@ export const ServerList = Store.withStore(ServerListStore, ({ store }) =>
 			<View id="server-list" position="absolute" theme="secundary" fill>
 				<View className="badge-wrapper">
 					<NewServerBadge onHover={(e) => onHover(e, -1)}  onHoverEnd={(e) => onHoverEnd(e, -1)}/>
-					{store.props.servers.map((s, i) => <ListBadge serverInfo={s} key={i} onClick={() => onClick(i)} onHover={(e) => onHover(e, i)} onHoverEnd={(e) => onHoverEnd(e, i)} />)}
+					{serversStore.props.servers.map((s, i) => <ListBadge serverInfo={s} key={i} onClick={() => onClick(i)} onHover={(e) => onHover(e, i)} onHoverEnd={(e) => onHoverEnd(e, i)} />)}
 				</View>
 				<ToolTip hoverEl={hoverState.hoverEl} show={hoverState.hoverIndex > -2}>
 					{hoverState.hoverIndex > -1 ? (
 						<>
 							<span className="name">
 								<span className="prefix">name: </span>
-								{store.props.servers[hoverState.hoverIndex].name}
+								{serversStore.props.servers[hoverState.hoverIndex].name}
 							</span>
 							<span className="version">
 								<span className="prefix">version: </span>
-								{store.props.servers[hoverState.hoverIndex].version}
+								{serversStore.props.servers[hoverState.hoverIndex].version}
 							</span>
 						</>
 					) : (hoverState.hoverIndex === -1 && "New Server")}

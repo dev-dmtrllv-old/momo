@@ -3,10 +3,10 @@ import { PersistenStore } from "./PersistenStore";
 import { Store } from "./Store";
 
 @Store.static
-export class ServerListStore extends PersistenStore<ServersProps>
+export class ServerListStore extends Store
 {
-	protected get persistentName(): string
+	public init()
 	{
-		return "servers";
+		
 	}
 }
