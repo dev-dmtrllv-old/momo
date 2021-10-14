@@ -115,9 +115,9 @@ export abstract class Persistent<Props>
 
 	public readonly update = <K extends keyof Props>(key: K, updater: (val: Props[K]) => Props[K]) => this.set(key, updater(this.get(key)));
 
-	public serialize(): string
+	public get data(): string
 	{
-		return JSON.stringify(this.props);
+		return JSON.parse(JSON.stringify(this.props));
 	}
 }
 

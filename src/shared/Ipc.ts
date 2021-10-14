@@ -52,23 +52,36 @@ export class IPC
 					if ((initHandlers as any)[channel])
 						handler = (initHandlers as any)[channel];
 
-					const parseArgs = (args: any[]): any[] => args.map(arg => JSON.parse(arg));
+					const parseArgs = (args: any[]): any[] =>
+					{
+						return args.map(arg => 
+						{
+							try 
+							{
+								return JSON.parse(arg);
+							}
+							catch
+							{
+								return arg;
+							}
+						})
+					};
 
 					switch (type)
 					{
 						case "invoke":
-							ipcMain.handle(channel, async (e, ...args) => { console.log(...parseArgs(args)); return await handler(...parseArgs(args)) });
+							ipcMain.handle(channel, async (e, ...args) => { console.log(...parseArgs(args)); return JSON.stringify(await handler(...parseArgs(args))) });
 							break;
 						case "async-msg":
 							ipcMain.on(channel, async (e, id, ...args) => 
 							{
 								{ console.log(...parseArgs(args)); }
 								const data = await handler(...parseArgs(args));
-								e.reply(this.channelToResponseString(channel, id), data);
+								e.reply(this.channelToResponseString(channel, id), JSON.stringify(data));
 							});
 							break;
 						case "msg":
-							ipcMain.on(channel, async (e, ...args) => { e.returnValue = (await handler(...parseArgs(args))); });
+							ipcMain.on(channel, async (e, ...args) => { e.returnValue = JSON.stringify(await handler(...parseArgs(args))); });
 							break;
 					}
 				}
@@ -110,7 +123,7 @@ export class IPC
 			{
 				case "invoke":
 					console.log(`invoke: ${channel}, args:`, ...parseArgs(args));
-
+					
 					ipcRenderer.invoke(channel, ...args).then((args: string) => resolve(JSON.parse(args))).catch(reject);
 					break;
 				case "msg":

@@ -19,7 +19,7 @@ export abstract class PersistenStore<Props> extends Store
 	protected async init()
 	{
 		const data = await IPC.call("get-persistent", this.persistentName);
-
+		
 		ipcRenderer.on(`persistent-${this.persistentName}-updated`, (e, key, val) => this.setVal(key, JSON.parse(val), true));
 
 		if (!data)
@@ -39,7 +39,7 @@ export abstract class PersistenStore<Props> extends Store
 		const props = { ...this.props, [key]: val };
 		this.props_ = props;
 		if(!fromIpcUpdate)
-			await IPC.call("update-persistent", this.persistentName, key, JSON.stringify(val));
+			await IPC.call("update-persistent", this.persistentName, key, val);
 	}
 
 	public readonly set = async <K extends keyof Props>(key: K, val: Props[K]) =>
