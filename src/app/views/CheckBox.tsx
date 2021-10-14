@@ -21,7 +21,7 @@ export const CheckBox: React.FC<CheckBoxProps> = ({ children, className, name, p
 	const handleClick = () =>
 	{
 		setSelected(!isSelected);
-		onChange && onChange({ name: name!, selected: isSelected });
+		onChange && onChange({ name: name!, selected: !isSelected });
 	}
 
 	return (

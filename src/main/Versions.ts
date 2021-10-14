@@ -35,9 +35,18 @@ export type MCVersions = {
 	};
 	versions: {
 		id: string;
-		type: "release" | "snapshot" | "old_beta" | "old_alpha";
+		type: VersionType;
 		url: string;
 		time: string;
 		releaseTime: string;
 	}[];
 };
+
+export type VersionsFiler = {
+	release: boolean;
+	snapshot: boolean;
+	old_beta: boolean;
+	old_alpha: boolean;
+};
+
+export type VersionType = keyof VersionsFiler;

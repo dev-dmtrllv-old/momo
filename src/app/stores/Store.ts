@@ -51,7 +51,7 @@ export abstract class Store
 			catch (e)
 			{
 				if (!(s instanceof PersistenStore))
-					console.error(e);
+					console.warn(`${s.constructor.name}: ${e.message}`);
 			}
 		}
 	}

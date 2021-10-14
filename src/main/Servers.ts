@@ -1,9 +1,10 @@
 import { Persistent } from "./Persistent";
-import { ServerInfo, ServerSettings, ServersProps } from "../shared/ServerInfo";
+import { defaultServerSettings, ServerInfo, ServerSettings, ServersProps } from "../shared/ServerInfo";
 import { Versions } from "./Versions";
 import { Settings } from "./Settings";
 import { ServerProcess } from "./ServerProcess";
 import { utils } from "../utils";
+import { ServerProperties } from "./ServerProperties";
 import path from "path";
 
 const fs = utils.fs;
@@ -17,7 +18,7 @@ export class Servers extends Persistent<ServersProps>
 
 	public get size() { return this.props.servers.length; }
 
-	public async create(info: ServerInfo, settings?: Partial<ServerSettings>): Promise<CreateServerInfo>
+	public async create(info: ServerInfo, settings: Partial<ServerSettings> = defaultServerSettings): Promise<CreateServerInfo>
 	{
 		const versions = Persistent.get<Versions>(Versions).get("versions");
 		const foundItem = versions.find(v => v.id === info.version);
@@ -52,6 +53,9 @@ export class Servers extends Persistent<ServersProps>
 		}
 		
 		await utils.http.download(serverJarPath, downloadInfo.url);
+
+		const serverProperties = new ServerProperties(resolve("server.properties"));
+		await serverProperties.setProps(settings);
 
 		await fs.writeFile(resolve("eula.txt"), "eula=true", "utf-8");
 

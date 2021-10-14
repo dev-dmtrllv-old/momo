@@ -1,12 +1,20 @@
-import { action, observable } from "mobx";
+import { action, computed, observable } from "mobx";
 import { IPC } from "shared/Ipc";
-import { ServerInfo } from "shared/ServerInfo";
-import { MCVersions } from "../../main/Versions";
+import { defaultServerSettings, ServerInfo, ServerSettings } from "shared/ServerInfo";
+import { MCVersions, VersionsFiler, VersionType } from "../../main/Versions";
 import { Store } from "./Store";
 
 @Store.static
 export class CreateServerStore extends Store
 {
+	@action
+	public setVersionFilterType(name: string, selected: boolean)
+	{
+		(this.versionTypes_ as any)[name] = selected;
+	}
+
+	public static readonly VERSION_TYPES: Readonly<["release", "snapshot", "old_alpha", "old_beta"]> = ["release", "snapshot", "old_alpha", "old_beta"];
+
 	private versionsInfo_: MCVersions = {
 		latest: {
 			release: "",
@@ -19,16 +27,40 @@ export class CreateServerStore extends Store
 	private isCreating: boolean = false;
 
 	@observable
-	private inputValues: ServerInfo = {
+	private inputValues: ServerInfo & ServerSettings = {
 		name: "",
-		version: ""
+		version: "",
+		color: "#ffa42c",
+		...defaultServerSettings
 	};
 
-	public get versions(): MCVersions["versions"] { return this.versionsInfo_.versions; }
+	@observable
+	private versionTypes_: VersionsFiler = {
+		release: true,
+		snapshot: false,
+		old_beta: false,
+		old_alpha: false,
+	};
+
+	@computed
+	public get versions(): MCVersions["versions"] { return this.versionsInfo_.versions.filter(v => this.isVersionTypeSelected(v.type)); }
 
 	public getInputvalue<K extends keyof ServerInfo>(key: K): ServerInfo[K]
 	{
 		return this.inputValues[key];
+	}
+
+	public isVersionTypeSelected(type: VersionType): boolean | undefined
+	{
+		return this.versionTypes_[type];
+	}
+
+	public getInitials()
+	{
+		const parts = this.inputValues.name.split(" ");
+		if(parts[1])
+			return [parts[0][0] || "", parts[1][0] || ""];
+		return [parts[0][0] || ""];
 	}
 
 	@action
@@ -71,8 +103,9 @@ export class CreateServerStore extends Store
 		}
 		else
 		{
-			const r = await IPC.call("create-server", JSON.stringify(this.inputValues), JSON.stringify({}));
-
+			const { name, color, version, ...settings } = this.inputValues;
+			const r = await IPC.call("create-server", JSON.stringify({ name, version, color }), JSON.stringify(settings));
+			console.log(r);
 		}
 	}
 }
