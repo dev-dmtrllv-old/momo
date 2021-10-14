@@ -117,7 +117,7 @@ export abstract class Persistent<Props>
 
 	public get data(): string
 	{
-		return JSON.parse(JSON.stringify(this.props));
+		return JSON.parse(JSON.stringify(this.props || {}));
 	}
 }
 

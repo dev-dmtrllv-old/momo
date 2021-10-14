@@ -17,13 +17,13 @@ export class CreateServerStore extends Store
 
 	@observable
 	private isCreating: boolean = false;
-	
+
 	@observable
 	private inputValues: ServerInfo = {
 		name: "",
 		version: ""
 	};
-	
+
 	public get versions(): MCVersions["versions"] { return this.versionsInfo_.versions; }
 
 	public getInputvalue<K extends keyof ServerInfo>(key: K): ServerInfo[K]
@@ -46,7 +46,6 @@ export class CreateServerStore extends Store
 	protected async init()
 	{
 		this.versionsInfo_ = await IPC.call("get-persistent", "versions");
-		console.log(this.versionsInfo_);
 		this.reset();
 	}
 
@@ -55,17 +54,18 @@ export class CreateServerStore extends Store
 	{
 		this.isCreating = false;
 		this.inputValues.name = '';
-		this.inputValues.version = this.versionsInfo_.versions[0].id;
+		if (this.versionsInfo_.versions?.length > 0)
+			this.inputValues.version = this.versionsInfo_.versions[0].id;
 	}
-	
+
 
 	@action
 	public readonly create = async () =>
 	{
-		if(this.isCreating)
+		if (this.isCreating)
 			return;
-		
-		if(!this.inputValues.name || !this.inputValues.version)
+
+		if (!this.inputValues.name || !this.inputValues.version)
 		{
 			console.warn("invalid input!");
 		}

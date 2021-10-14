@@ -1,5 +1,6 @@
 import { isMain } from "./env";
 import type { CreateServerInfo, DeleteServerInfo } from "../main/Servers";
+import { ProcessInfoGroup } from "../main/ServerProcess";
 
 class IpcHandler<T extends HandlerCallback = HandlerCallback>
 {
@@ -27,6 +28,9 @@ export class IPC
 		"get-persistent": new IPC.Handler<(key: string) => any>("async-msg"),
 		"create-server": new IPC.Handler<(info: string, settings: string) => Promise<CreateServerInfo>>("invoke"),
 		"delete-server": new IPC.Handler<(name: string) => Promise<DeleteServerInfo>>("invoke"),
+		"start-server": new IPC.Handler<(name: string) => Promise<any>>("invoke"),
+		"get-running-processes": new IPC.Handler<() => ProcessInfoGroup>("invoke"),
+		"stop-server": new IPC.Handler<(name: string) => Promise<any>>("invoke"),
 	};
 
 	private static get handlers() { return this.handlers_ as IpcHandlers; }
@@ -70,18 +74,17 @@ export class IPC
 					switch (type)
 					{
 						case "invoke":
-							ipcMain.handle(channel, async (e, ...args) => { console.log(...parseArgs(args)); return JSON.stringify(await handler(...parseArgs(args))) });
+							ipcMain.handle(channel, async (e, ...args) => { return JSON.stringify(await handler(...parseArgs(args)) || {}) });
 							break;
 						case "async-msg":
 							ipcMain.on(channel, async (e, id, ...args) => 
 							{
-								{ console.log(...parseArgs(args)); }
 								const data = await handler(...parseArgs(args));
-								e.reply(this.channelToResponseString(channel, id), JSON.stringify(data));
+								e.reply(this.channelToResponseString(channel, id), JSON.stringify(data || {}));
 							});
 							break;
 						case "msg":
-							ipcMain.on(channel, async (e, ...args) => { e.returnValue = JSON.stringify(await handler(...parseArgs(args))); });
+							ipcMain.on(channel, async (e, ...args) => { e.returnValue = JSON.stringify(await handler(...parseArgs(args)) || {}); });
 							break;
 					}
 				}

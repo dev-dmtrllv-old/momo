@@ -29,3 +29,5 @@ export type ServersProps = {
 
 export type Difficulty = "hard" | "easy" | ""
 export type GameMode = "survival" | "hardcore" | "creative";
+
+export const getServerProcChannel = (name: string, ...rest: string[]) => `server-proc-${name}-${rest.join("-")}`;

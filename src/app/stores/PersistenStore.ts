@@ -27,7 +27,7 @@ export abstract class PersistenStore<Props> extends Store
 		
 		this.props_ = data;
 
-		this.onLoad(this.props);
+		await this.onLoad(this.props);
 		makeObservable(this);
 	}
 

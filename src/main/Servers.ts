@@ -2,6 +2,7 @@ import { Persistent } from "./Persistent";
 import { ServerInfo, ServerSettings, ServersProps } from "../shared/ServerInfo";
 import { Versions } from "./Versions";
 import { Settings } from "./Settings";
+import { ServerProcess } from "./ServerProcess";
 import { utils } from "../utils";
 import path from "path";
 
@@ -54,10 +55,22 @@ export class Servers extends Persistent<ServersProps>
 		return { success: true };
 	}
 
+	public async start(name: string)
+	{
+		const p = ServerProcess.get(name);
+		if(!p.isRunning)
+			p.start();
+	}
+
+	public async stop(name: string)
+	{
+		const p = ServerProcess.get(name);
+		if(p.isRunning)
+			p.stop();
+	}
+
 	public async delete(name: string): Promise<DeleteServerInfo>
 	{
-		console.log("delete", name);
-
 		let servers = [...this.get("servers")];
 		let index = -1;
 

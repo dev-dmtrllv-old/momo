@@ -10,6 +10,7 @@ import path from "path";
 import { Settings } from "./Settings";
 import { Versions } from "./Versions";
 import { Servers } from "./Servers";
+import { ServerProcess } from "./ServerProcess";
 
 (process.env as any)["ELECTRON_DISABLE_SECURITY_WARNINGS"] = true;
 
@@ -30,10 +31,13 @@ app.whenReady().then(() =>
 		"start-web-server": () => WebServer.get().start(),
 		"stop-web-server": () => WebServer.get().stop(),
 		"is-web-server-running": () => WebServer.get().isRunning(),
-		"get-persistent": (name): any => Persistent.get(name).data,
+		"get-persistent": (name): any => Persistent.get(name)?.data,
 		"update-persistent": (name, key, val) => Persistent.get(Servers).set(key, val),
 		"create-server": (info: any, settings: any) => Persistent.get(Servers).create(info, settings),
 		"delete-server": (name) => Persistent.get(Servers).delete(name),
+		"start-server": (name: string) => Persistent.get(Servers).start(name),
+		"get-running-processes": () => ServerProcess.getProcesses(),
+		"stop-server": (name: string) => Persistent.get(Servers).stop(name)
 	});
 	
 	const iconPath = Assets.resolvePath("logo.png");
