@@ -31,6 +31,8 @@
 				cursor: pointer;
 				transition: color 350ms;
 				display: inline-block;
+				color: inherit;
+				text-decoration: none;
 				&:hover {
 					color: rgba(255, 255, 255, 1);
 					transition: 350ms;

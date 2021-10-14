@@ -1,28 +1,28 @@
-import { SectionStore } from "app/stores/SectionStore";
-import { Store } from "app/stores/Store";
-import { Container, FlexBox, FlexItem, View } from "app/views";
 import React from "react";
+import { useLocation } from "react-router";
+import { NavLink } from "react-router-dom";
+
+import { Container, View } from "app/views";
+import { Sections } from "app/sections";
 
 import "./styles/header.scss";
 
-export const Header: React.FC = Store.withStore(SectionStore, ({ store }) =>
+export const Header: React.FC = ({ }) =>
 {
+	const location = useLocation();
+
+	const title_ = Sections.getTitle(location.pathname).title;
+	
+	const t = typeof title_ === "function" ? title_(location.pathname) : title_;
+
 	return (
 		<View fill id="header">
 			<Container fill className="wrapper" position="relative">
-				<View className="title"><h1>{store.title}</h1></View>
+				<View className="title"><h1>{t}</h1></View>
 				<View className="links">
-					{SectionStore.titles.map((title, i) => 
-					{
-						const isActive = title === store.title;
-						return (
-							<a key={i} className={isActive ? "active" : ""} onClick={() => store.routeTo(title)}>
-								{title}
-							</a>
-						);
-					})}
+					{Sections.links.map((link, i) => <NavLink className="link" key={i} to={link.path} exact={link.exact}>{link.text}</NavLink>)}
 				</View>
 			</Container>
 		</View>
 	);
-});
+};

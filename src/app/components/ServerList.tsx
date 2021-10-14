@@ -1,4 +1,4 @@
-import { SectionStore } from "app/stores/SectionStore";
+import { useHistory } from "react-router";
 import { ServerListStore } from "app/stores/ServerListStore";
 import { Store } from "app/stores/Store";
 import { View, WithViewProps } from "app/views";
@@ -35,14 +35,15 @@ const ListBadge: React.FC<ListBadgeProps> = ({ serverInfo, children, ...rest }) 
 	);
 }
 
-const NewServerBadge: React.FC<BadgeProps> = Store.withStore(SectionStore, ({ store, children, ...props }) => 
+const NewServerBadge: React.FC<BadgeProps> = ({ children, ...props }) => 
 {
+	const history = useHistory();
 	return (
-		<Badge className="new" onClick={() => store.routeTo("Create")} {...props}>
+		<Badge className="new" onClick={() => history.push("/create-server")} {...props}>
 			&#43;
 		</Badge>
 	);
-});
+};
 
 const ToolTip: React.FC<{ hoverEl: HTMLDivElement | null, show: boolean }> = ({ children, show, hoverEl }) =>
 {
