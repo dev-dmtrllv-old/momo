@@ -1,5 +1,6 @@
+import { createWriteStream } from "fs";
 import { isMain } from "../shared/env";
-import fs from "fs";
+import { utils } from "../utils";
 
 export namespace http
 {
@@ -22,30 +23,27 @@ export namespace http
 		}
 	});
 
-	export const download = (location: string, url: string) => new Promise<string>((res, rej) =>
+	export const download = (location: string, url: string) => new Promise<string>(async (res, rej) =>
 	{
 		if (isMain)
 		{
-			fs.exists(location, (exists) => 
+			if (await utils.fs.exists(location))
 			{
-				if (exists)
+				res(location);
+			}
+			else
+			{
+				const https = require(url[4] === 's' ? "https" : "http");
+				const ws = createWriteStream(location);
+				ws.on("close", () => res(location));
+				ws.on("error", rej);
+				https.get(url, (response: any) => 
 				{
-					res(location);
-				}
-				else
-				{
-					const https = require(url[4] === 's' ? "https" : "http");
-					const ws = fs.createWriteStream(location);
-					ws.on("close", () => res(location));
-					ws.on("error", rej);
-					https.get(url, (response: any) => 
-					{
-						response.on("end", () => ws.close());
-						response.on("error", rej);
-						response.pipe(ws);
-					});
-				}
-			})
+					response.on("end", () => ws.close());
+					response.on("error", rej);
+					response.pipe(ws);
+				});
+			}
 
 		}
 		else

@@ -4,7 +4,8 @@ import { Versions } from "./Versions";
 import { Settings } from "./Settings";
 import { utils } from "../utils";
 import path from "path";
-import fs from "fs";
+
+const fs = utils.fs;
 
 export class Servers extends Persistent<ServersProps>
 {
@@ -28,22 +29,22 @@ export class Servers extends Persistent<ServersProps>
 		const downloadInfo: DownloadInfo = JSON.parse(data).downloads.server;
 		const serversPath = Persistent.get<Settings>(Settings).get("serversPath");
 
-		if(!fs.existsSync(serversPath))
-			fs.mkdirSync(serversPath);
+		if(!await utils.fs.exists(serversPath))
+			await fs.mkdir(serversPath);
 
 		const serverPath = path.resolve(serversPath, info.name);
 		const serverJarPath = path.join(serverPath, "server.jar");
 
-		if(fs.existsSync(serverPath))
+		if(await fs.exists(serverPath))
 		{
-			if(fs.existsSync(serverJarPath))
+			if(await fs.exists(serverJarPath))
 				return { error: `server ${info.name} already exists!`, success: false };
 			else
 				return { error: `folder not empty!`, success: false };
 		}	
 		else
 		{
-			fs.mkdirSync(serverPath);
+			await fs.mkdir(serverPath);
 		}
 		
 		await utils.http.download(serverJarPath, downloadInfo.url);
@@ -56,6 +57,14 @@ export class Servers extends Persistent<ServersProps>
 	public async delete(name: string): Promise<DeleteServerInfo>
 	{
 		console.log("delete", name);
+
+		const s = this.get("servers").find(s => s.name === name);
+
+		if(s)
+		{
+
+		}
+
 		return { success: true };
 	}
 }

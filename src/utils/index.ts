@@ -2,6 +2,7 @@ import * as String from "./string";
 import * as Math from "./math";
 import * as React from "./react";
 import * as HttpModule from "./http";
+import * as FsModule from "./fs";
 
 export namespace utils
 {
@@ -9,6 +10,7 @@ export namespace utils
 	export const math = Math;
 	export const react = React;
 	export const http = HttpModule.http;
+	export const fs = FsModule.FS;
 
 	export const arrayEquals = (a: any[], b: any[]) => 
 	{
