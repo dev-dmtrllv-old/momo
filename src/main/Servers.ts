@@ -34,7 +34,10 @@ export class Servers extends Persistent<ServersProps>
 			await fs.mkdir(serversPath);
 
 		const serverPath = path.resolve(serversPath, info.name);
-		const serverJarPath = path.join(serverPath, "server.jar");
+		
+		const resolve = (...parts: string[]) => path.join(serverPath, ...parts); 
+		
+		const serverJarPath = resolve("server.jar");
 
 		if(await fs.exists(serverPath))
 		{
@@ -49,6 +52,8 @@ export class Servers extends Persistent<ServersProps>
 		}
 		
 		await utils.http.download(serverJarPath, downloadInfo.url);
+
+		await fs.writeFile(resolve("eula.txt"), "eula=true", "utf-8");
 
 		this.update("servers", s => [...s, info]);
 

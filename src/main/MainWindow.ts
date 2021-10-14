@@ -3,6 +3,7 @@ import { Window } from "./Window";
 import fs from "fs";
 import { PromptWindow } from "./PrompWindow";
 import { Assets } from "./Assets";
+import { isDev } from "../shared/env";
 
 export class MainWindow extends Window
 {
@@ -56,7 +57,7 @@ export class MainWindow extends Window
 				},
 			]
 		});
-		
+
 		if (response)
 		{
 			this.canQuit_ = true;
@@ -71,32 +72,36 @@ export class MainWindow extends Window
 
 		this.window.setMenu(null);
 
-		let to: NodeJS.Timeout;
-
-		const onChange = () => 
+		if (isDev)
 		{
-			clearTimeout(to);
-			to = setTimeout(() => 
+			let to: NodeJS.Timeout;
+
+			const onChange = () => 
 			{
-				this.window.webContents.reload();
-			}, 350);
-		};
+				clearTimeout(to);
+				to = setTimeout(() => 
+				{
+					this.window.webContents.reload();
+				}, 350);
+			};
 
-		const watch = (dir: string = "") =>
-		{
-			if (fs.existsSync(`./dist/app${dir}`))
-				fs.watch(`./dist/app${dir}`, {}, onChange);
+			const watch = (dir: string = "") =>
+			{
+				if (fs.existsSync(`./dist/app${dir}`))
+					fs.watch(`./dist/app${dir}`, {}, onChange);
+			}
+
+			watch();
+			watch("js");
+			watch("img");
 		}
-
-		watch();
-		watch("js");
-		watch("img");
 	}
 
 	protected onReady = () =>
 	{
 		this.window.maximize();
-		this.window.webContents.openDevTools();
+		if (isDev)
+			this.window.webContents.openDevTools();
 		this.window.show();
 	}
 

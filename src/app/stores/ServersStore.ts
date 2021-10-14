@@ -127,6 +127,12 @@ export class ServersStore extends PersistenStore<ServersProps>
 		}
 	}
 
+	public readonly sendCommand = async (name: string, command: string) =>
+	{
+		if (this.runningServers_[name]?.isRunning)
+			await IPC.call("send-server-command", name, command);
+	}
+
 }
 
 type ServerProcInfo = {

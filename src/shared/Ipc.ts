@@ -31,6 +31,7 @@ export class IPC
 		"start-server": new IPC.Handler<(name: string) => Promise<any>>("invoke"),
 		"get-running-processes": new IPC.Handler<() => ProcessInfoGroup>("invoke"),
 		"stop-server": new IPC.Handler<(name: string) => Promise<any>>("invoke"),
+		"send-server-command": new IPC.Handler<(name: string, command: string) => any>("async-msg"),
 	};
 
 	private static get handlers() { return this.handlers_ as IpcHandlers; }

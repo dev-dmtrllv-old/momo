@@ -1,11 +1,13 @@
 import { ServersStore } from "app/stores/ServersStore";
 import { Store } from "app/stores/Store";
-import { Button, Container } from "app/views";
+import { Button, Container, Input } from "app/views";
 import React from "react";
-import { useHistory, useLocation, useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 
 export const Server = Store.withStore(ServersStore, ({ store }) =>
 {
+	const [val, setVal] = React.useState("");
+
 	const { replace } = useHistory();
 	const { name } = useParams<{ name: string }>();
 
@@ -23,6 +25,7 @@ export const Server = Store.withStore(ServersStore, ({ store }) =>
 			</h1>
 			<div>
 				{store.getOutputs(name).map((n, i) => <p key={i}>{n}</p>)}
+				<Input type="text" onChange={(e) => setVal(e.target.value)} value={val} placeholder="" name="command" onKeyDown={(e) => { if(e.code === "Enter") { store.sendCommand(name, val); setVal(""); } }}/>
 			</div>
 		</Container>
 	);

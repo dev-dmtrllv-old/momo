@@ -43,6 +43,7 @@ type InputProps = {
 	className?: string;
 	type?: "text" | "password" | "email";
 	onChange?: (e: React.ChangeEvent<HTMLInputElement>) => any;
+	onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => any;
 	placeholder?: string;
 	value?: string;
 	name?: string;

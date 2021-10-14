@@ -28,15 +28,17 @@ export abstract class Persistent<Props>
 			for (const name in this.types_)
 			{
 				const p = path.resolve(appDataPath, name + ".json");
-				const o: Persistent<any> = this.objects_[name] = new this.types_[name](name, p);
-				
+				const o: Persistent<any> = new this.types_[name](name, p);
+
+				this.objects_[name] = o;
+
 				let props: any = {};
 				
 				const defaultProps = await o.defaultProps();
 
 				if (!fs.existsSync(p))
 				{
-					props = o.defaultProps();
+					props = defaultProps;
 					fs.writeFileSync(p, JSON.stringify(props), "utf-8");
 				}
 				else
@@ -65,18 +67,17 @@ export abstract class Persistent<Props>
 	{
 		if (typeof arg === "string")
 		{
-			for (const name in this.objects_)
+			for (const name in Persistent.objects_)
 				if (name === arg)
-					return this.objects_[name] as T;
-
+					return Persistent.objects_[name] as T;
 		}
 		else
 		{
 			for (const name in this.objects_)
-				if (this.objects_[name].constructor === arg)
-					return this.objects_[name] as T;
-
+				if (Persistent.objects_[name].constructor === arg)
+					return Persistent.objects_[name] as T;
 		} 
+		
 		return null;
 	}
 

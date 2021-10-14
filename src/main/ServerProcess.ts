@@ -10,6 +10,12 @@ export class ServerProcess
 {
 	private static readonly processes: { [name: string]: ServerProcess } = {};
 
+	public static killAll()
+	{
+		for(const p in this.processes)
+			this.processes[p].process?.kill();
+	}
+
 	public static get(name: string)
 	{
 		if (!this.processes[name])
@@ -53,13 +59,15 @@ export class ServerProcess
 		if (!this.isRunning && !this.process)
 		{
 			this.isRunning_ = true;
-			
+
 			this.process = spawn("java", ["-jar", "-Xmx4G", "-Xms4G", "server.jar", "nogui"], {
 				cwd: this.serverPath,
 			});
-			
+
+			this.process.stdin.setDefaultEncoding("utf-8");
+
 			const mainWindow = Window.get(MainWindow);
-			
+
 			this.process.stdout.on("data", (d) => 
 			{
 				d = d.toString();
@@ -98,6 +106,21 @@ export class ServerProcess
 			}
 		}
 	}
+
+	public readonly sendCommand = (command: string) => new Promise<void>((res, rej) => 
+	{
+		console.log(`got command: ${command}`);
+		if(this.process)
+			this.process.stdin.write(command + "\r\n", "utf-8", (err) => err ? rej(err) : res());
+	});
+
+	// public static kill = () =>
+	// {
+	// 	for(const n in this.processes)
+	// 	{
+
+	// 	}
+	// }
 }
 
 export type ProcessInfo = {
@@ -108,4 +131,4 @@ export type ProcessInfo = {
 
 export type ProcessInfoGroup = {
 	[key: string]: ProcessInfo;
-}
+};
