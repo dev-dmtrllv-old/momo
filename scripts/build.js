@@ -71,121 +71,119 @@ const overwriteInfoPlst = (plstPath) =>
 
 }
 
-overwriteInfoPlst(path.resolve(buildPath, "momo.app", "Contents", "Info.plist"));
-overwriteInfoPlst(path.resolve(buildPath, "momo.app", "Contents", "Frameworks", "Electron Helper.app", "Contents", "Info.plist"));
+const finish = () =>
+{
+	const pkgData = {
+		name: pkg.name,
+		version: pkg.version,
+		main: "main.bundle.js",
+		dependencies: {
+			"express": pkg.dependencies["express"]
+		}
+	};
 
+	fs.writeFileSync(path.resolve(appPath, "package.json"), JSON.stringify(pkgData), "utf-8");
 
-// const finish = () =>
-// {
-// 	const pkgData = {
-// 		name: pkg.name,
-// 		version: pkg.version,
-// 		main: "main.bundle.js",
-// 		dependencies: {
-// 			"express": pkg.dependencies["express"]
-// 		}
-// 	};
+	const assetsDir = path.resolve(__dirname, "../src/assets");
+	const distAssetsDir = path.resolve(__dirname, "../build/resources/app/assets");
 
-// 	fs.writeFileSync(path.resolve(appPath, "package.json"), JSON.stringify(pkgData), "utf-8");
+	if (!fs.existsSync(distAssetsDir))
+		fs.mkdirSync(distAssetsDir);
 
-// 	const assetsDir = path.resolve(__dirname, "../src/assets");
-// 	const distAssetsDir = path.resolve(__dirname, "../build/resources/app/assets");
+	fs.readdirSync(assetsDir).forEach(f => 
+	{
+		fs.copyFileSync(path.resolve(assetsDir, f), path.resolve(distAssetsDir, f));
+	});
 
-// 	if (!fs.existsSync(distAssetsDir))
-// 		fs.mkdirSync(distAssetsDir);
+	let electronPath;
+	let p;
 
-// 	fs.readdirSync(assetsDir).forEach(f => 
-// 	{
-// 		fs.copyFileSync(path.resolve(assetsDir, f), path.resolve(distAssetsDir, f));
-// 	});
+	switch (platform)
+	{
+		case "linux":
+			electronPath = path.resolve(buildPath, "electron");
+			p = path.resolve(buildPath, "momo");
+			if (fs.existsSync(electronPath))
+				fs.renameSync(electronPath, p);
+			break;
+		case "win32":
+			electronPath = path.resolve(buildPath, "electron.exe");
+			p = path.resolve(buildPath, "momo.exe");
+			if (fs.existsSync(electronPath))
+				fs.renameSync(electronPath, p);
+			break;
+		case "darwin":
+			electronPath = path.resolve(buildPath, "Electron.app");
+			p = path.resolve(buildPath, "momo.app");
+			if (fs.existsSync(electronPath))
+				fs.renameSync(electronPath, p);
+			overwriteInfoPlst(path.resolve(p, "Contents", "Info.plist"));
+			overwriteInfoPlst(path.resolve(p, "Contents", "Frameworks", "Electron Helper.app", "Contents", "Info.plist"));
+			break;
+	}
 
-// 	let electronPath;
-// 	let p;
+	if (process.platform !== "win32")
+	{
+		if (fs.existsSync(p))
+			spawnSync("chmod", ["+x", p], { stdio: "inherit" });
+	}
 
-// 	switch (platform)
-// 	{
-// 		case "linux":
-// 			electronPath = path.resolve(buildPath, "electron");
-// 			p = path.resolve(buildPath, "momo");
-// 			if (fs.existsSync(electronPath))
-// 				fs.renameSync(electronPath, p);
-// 			break;
-// 		case "win32":
-// 			electronPath = path.resolve(buildPath, "electron.exe");
-// 			p = path.resolve(buildPath, "momo.exe");
-// 			if (fs.existsSync(electronPath))
-// 				fs.renameSync(electronPath, p);
-// 			break;
-// 		case "darwin":
-// 			electronPath = path.resolve(buildPath, "Electron.app");
-// 			p = path.resolve(buildPath, "momo.app");
-// 			if (fs.existsSync(electronPath))
-// 				fs.renameSync(electronPath, p);
-// 			break;
-// 	}
+	spawnSync("npm", ["i"], { cwd: appPath, stdio: "inherit" });
+}
 
-// 	if (process.platform !== "win32")
-// 	{
-// 		if (fs.existsSync(p))
-// 			spawnSync("chmod", ["+x", p], { stdio: "inherit" });
-// 	}
+const compileApp = () => new Promise((res) => 
+{
+	webpack(appConfig).run((_, stats) => 
+	{
+		console.log(`\n[App]:`);
+		console.log(stats.toString("minimal"));
+		console.log("");
+		res();
+	});
+});
 
-// 	spawnSync("npm", ["i"], { cwd: appPath, stdio: "inherit" });
-// }
+const compileMain = () => new Promise((res) => 
+{
+	webpack(mainConfig).run((a, stats) => 
+	{
+		console.log(`\n[Main]:`);
+		console.log(stats.toString("minimal"));
+		console.log("");
+		res();
+	});
+});
 
-// const compileApp = () => new Promise((res) => 
-// {
-// 	webpack(appConfig).run((_, stats) => 
-// 	{
-// 		console.log(`\n[App]:`);
-// 		console.log(stats.toString("minimal"));
-// 		console.log("");
-// 		res();
-// 	});
-// });
+const build = () =>
+{
+	if (fs.existsSync(appPath))
+		rimraf.sync(appPath);
 
-// const compileMain = () => new Promise((res) => 
-// {
-// 	webpack(mainConfig).run((a, stats) => 
-// 	{
-// 		console.log(`\n[Main]:`);
-// 		console.log(stats.toString("minimal"));
-// 		console.log("");
-// 		res();
-// 	});
-// });
+	Promise.all([compileApp(), compileMain()]).then(() => finish());
+}
 
-// const build = () =>
-// {
-// 	if (fs.existsSync(appPath))
-// 		rimraf.sync(appPath);
+if (fs.existsSync(buildPath))
+{
+	build();
+}
+else
+{
+	downloadElectron({
+		version: pkg.devDependencies.electron.replace("^", ""),
+		platform: platform,
+		arch: process.arch,
+		caches: "../electron-caches"
+	}, (err, zipPath) =>
+	{
+		if (err)
+			throw err;
 
-// 	Promise.all([compileApp(), compileMain()]).then(() => finish());
-// }
-
-// if (fs.existsSync(buildPath))
-// {
-// 	build();
-// }
-// else
-// {
-// 	downloadElectron({
-// 		version: pkg.devDependencies.electron.replace("^", ""),
-// 		platform: platform,
-// 		arch: process.arch,
-// 		caches: "../electron-caches"
-// 	}, (err, zipPath) =>
-// 	{
-// 		if (err)
-// 			throw err;
-
-// 		const stream = fs.createReadStream(zipPath);
-// 		stream.on("close", () => 
-// 		{
-// 			if (fs.existsSync(defaultAppAsarPath))
-// 				fs.unlinkSync(defaultAppAsarPath);
-// 			build();
-// 		});
-// 		stream.pipe(unzip.Extract({ path: buildPath }));
-// 	});
-// }
+		const stream = fs.createReadStream(zipPath);
+		stream.on("close", () => 
+		{
+			if (fs.existsSync(defaultAppAsarPath))
+				fs.unlinkSync(defaultAppAsarPath);
+			build();
+		});
+		stream.pipe(unzip.Extract({ path: buildPath }));
+	});
+}
