@@ -1,6 +1,6 @@
 const { webpack } = require("webpack");
 const path = require("path");
-const { spawn } = require("child_process");
+const { spawn, exec } = require("child_process");
 const findProccess = require("find-process");
 const rimraf = require("rimraf");
 
@@ -35,7 +35,15 @@ const restart = () =>
 			});
 			setTimeout(() => 
 			{
-				proc = spawn("electron", [".", "--dev"], { cwd: path.resolve(__dirname, ".."), stdio: "inherit" });
+				if(process.platform === "win32")
+				{
+					proc = exec("npm start --dev", { cwd: path.resolve(__dirname, ".."), stdio: "inherit" });
+					// proc = spawn("npm", ["start", "--dev"], { cwd: path.resolve(__dirname, ".."), stdio: "inherit" });
+				}
+				else
+				{
+					proc = spawn("electron", [".", "--dev"], { cwd: path.resolve(__dirname, ".."), stdio: "inherit" })
+				}
 			}, 500);
 		});
 	}, 150);

@@ -2,7 +2,7 @@ const { webpack } = require("webpack");
 const path = require("path");
 const fs = require("fs");
 const downloadElectron = require("electron-download");
-const unzip = require("unzip");
+const unzip = require("unzipper");
 const rimraf = require("rimraf");
 
 const appConfig = require("./webpack.config");
